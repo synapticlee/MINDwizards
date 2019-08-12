@@ -11,21 +11,18 @@ if nargin < 2
 end
 
 %% Options
-convergence_test = 5;
+starts = 20;
    
 %% Fit
 for subject = 1:length(data)
-    %disp('Fitting subject ' int2str(subject))
-    number_unchanged = 0;
-    starts = 0;
-    while number_unchanged < convergence_test
-        starts = starts + 1;
-        
+    disp(['Fitting subject ' int2str(subject)])
+    for start = 1:starts
+
         %define likelihood function
             switch model 
                 case 'single_LR'
-                param(1) = struct('name','lr','lb',0,'ub',.0000001); %set name, lower bound, upper bound
-                param(2) = struct('name', 'sigma', 'lb', .0001, 'ub', 100);
+                param(1) = struct('name','lr','lb',0,'ub',1e-6); %set name, lower bound, upper bound
+                param(2) = struct('name', 'sigma', 'lb', 5, 'ub', 100);
                 f = @(x) likfun_single_LR(x, data(subject));
           
                 case 'attention_weight'
@@ -45,21 +42,20 @@ for subject = 1:length(data)
         [x, nloglik] = fmincon(f, x0);
             
         % store min negative log likelihood and associated parameter values
-            if starts == 1 || nloglik < results(subject).nll
-                num_unchanged = 0; %reset to 0 if likelihood changes
-                results(subject).nll = nloglik;
-                results(subject).x = x;
-            end
-            results(subject).sub = subject;
+            %if starts == 1 || nloglik < results(subject).nll
+              %  num_unchanged = 0; %reset to 0 if likelihood changes
+                results(subject, starts).nll = nloglik;
+                results(subject, starts).x = x;
+            %end
+            results(subject, starts).sub = subject;
     end
 end
     
     
         
 %% Run fmincon
-results(subject).model = model;
-results(subject).num_params = length(param);
-    
+results(subject, starts).model = model;
+results(subject, starts).num_params = length(param);
     
 end
 
