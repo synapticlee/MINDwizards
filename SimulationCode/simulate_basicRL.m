@@ -4,7 +4,7 @@ clear
 %% generative parameters ==================================================
 
 % number of dimensions
-D = 5;
+D = 2;
 
 % regression coefficients
 beta = rand(D,1);
@@ -26,22 +26,22 @@ T = 1000;
 alpha = 0.1;
 
 for t = 1:T
-    
+
     theta_store(:,t) = theta;
-    
+
     % sample X for this trial
     X = gX();
     R = beta' * X + nZ();
-    
+
     % compute prediction
     Rhat = theta' * X;
-    
+
     %  compute prediction error
     delta = R - Rhat;
-    
+
     % update
     theta = theta + alpha * delta * X;
-    
+
 end
 
 
