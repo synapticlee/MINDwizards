@@ -10,6 +10,9 @@ D = 5;
 beta = rand(D,1);
 beta = beta / sum(beta);
 
+%invtemp for softmax
+invTemp = 20;
+
 % generative function for sampling stimuli 
 % note stimulus values are between -1 and +1
 gX = @() (rand(D,1)-0.5)*2;
@@ -20,7 +23,7 @@ nZ = @() 0 * randn(1);
 
 %% simulate ===============================================================
 % initialize learning algorithm
-theta = rand(D,1);
+theta = .25* ones(D,1);
 
 T = 1000;
 alpha = 0.1;
@@ -39,9 +42,12 @@ for t = 1:T
     %  compute prediction error
     delta = R - Rhat;
     
-    % update
-    theta = theta + alpha * delta * X;
+    %softmax - attention prime 
+    attention_weight = exp(invTemp*theta)/sum(exp(invTemp*theta));
     
+    % update
+    theta = theta + alpha * delta * attention_weight .* X;
+
 end
 
 
