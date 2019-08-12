@@ -7,17 +7,15 @@ clear
 D = 2;
 
 % regression coefficients
-beta = [.55; .25; .12; .06; .02];
+beta = rand(D,1);
+beta = beta / sum(beta);
 
 % generative function for sampling stimuli 
-% note stimulus values are between 0 and 100
-gX = @() (rand(D,1))*100;
+% note stimulus values are between -1 and +1
+gX = @() (rand(D,1)-0.5)*2;
 
 % noise function
 nZ = @() 0 * randn(1);
-
-%number of subjects
-num_subs = 10000;
 
 
 %% simulate ===============================================================
@@ -27,28 +25,23 @@ theta = rand(D,1);
 T = 1000;
 alpha = 0.1;
 
-for subject = 1:num_subs
-    alpha = unifrnd(0, 1e-4);
-    sigma = unifrnd(5, 100);
-    sub(subject).alpha = alpha;
-    sub(subject).sigma = sigma;
-    for trial = 1:T
-    
+for t = 1:T
+
     theta_store(:,t) = theta;
-    
+
     % sample X for this trial
     X = gX();
     R = beta' * X + nZ();
-    
+
     % compute prediction
     Rhat = theta' * X;
-    
+
     %  compute prediction error
     delta = R - Rhat;
-    
+
     % update
     theta = theta + alpha * delta * X;
-    
+
 end
 
 
