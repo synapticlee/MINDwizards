@@ -11,7 +11,7 @@ if nargin < 2
 end
 
 %% Options
-starts = 20;
+starts = 5;
    
 %% Fit
 for subject = 1:length(data)
