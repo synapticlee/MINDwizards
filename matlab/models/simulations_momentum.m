@@ -7,32 +7,32 @@ clear
 D = 2;
 
 % regression coefficients
-beta = [.55; .25; .12; .06; .02];
+beta = rand(D,1);
+beta = beta / sum(beta);
 
-% generative function for sampling stimuli 
-% note stimulus values are between 0 and 100
-gX = @() (rand(D,1))*100;
+% generative function for sampling stimuli
+gX = @() (rand(D,1)-0.5)*2;
 
 % noise function
 nZ = @() 0 * randn(1);
 
-%number of subjects
-num_subs = 10000;
-
 
 %% simulate ===============================================================
 % initialize learning algorithm
-theta = rand(D,1);
+theta = [0 0]'; %rand(D,1);
+
+% function for computing estimate
+estimate = @(theta, X) theta' * X;
+
+% function for updating parameters
+update = @(theta, X, delta, alpha) theta + alpha * delta * X;
 
 T = 1000;
 alpha = 0.1;
+p = 0.6;
+dTheta = 0;
 
-for subject = 1:num_subs
-    alpha = unifrnd(0, 1e-4);
-    sigma = unifrnd(5, 100);
-    sub(subject).alpha = alpha;
-    sub(subject).sigma = sigma;
-    for trial = 1:T
+for t = 1:T
     
     theta_store(:,t) = theta;
     
@@ -47,7 +47,8 @@ for subject = 1:num_subs
     delta = R - Rhat;
     
     % update
-    theta = theta + alpha * delta * X;
+    dTheta = p * dTheta + alpha * delta * X
+    theta = theta + dTheta;
     
 end
 
@@ -58,14 +59,10 @@ for i = 1:D
     plot([0 T], [1 1]*beta(i), 'k--')
 end
 ylim([0 1])
-xlabel('time step')
-ylabel('regression parameter, \theta')
 
 
 figure(2); clf; hold on;
-plot(theta_store(1,:), theta_store(2,:))
+plot(theta_store(1,:), theta_store(2,:),'.-')
 xlim([0 1]); ylim([0 1])
 plot(theta_store(1,1), theta_store(2,1), 'r.')
 plot(beta(1), beta(2), 'r*')
-xlabel('weight 1')
-ylabel('weight 2')
