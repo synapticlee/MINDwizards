@@ -60,7 +60,7 @@ end
 
 
 %% save data
-save('sub', 'simulated_1LR')
+save('simulated_1LR', 'sub')
 
 
 %% Plot
