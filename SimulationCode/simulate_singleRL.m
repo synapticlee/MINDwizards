@@ -1,6 +1,5 @@
 clear
 
-
 %% generative parameters ==================================================
 
 % number of dimensions
@@ -31,6 +30,7 @@ for subject = 1:num_subs
     sigma = unifrnd(5, 100);
     sub(subject).alpha = alpha;
     sub(subject).sigma = sigma;
+    sub(subject).nTrials = T;
     for trial = 1:T
    
         %theta_store(:,t, alpha_vals, sigma_vals) = theta;
@@ -61,7 +61,6 @@ end
 
 %% save data
 save('simulated_1LR', 'sub')
-
 
 %% Plot
 % figure(1); clf;  hold on;
