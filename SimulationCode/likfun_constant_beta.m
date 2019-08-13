@@ -9,7 +9,7 @@ sigma  = params(1);
 NTrials = length(data.response);
 X = data.bars;
 for tr = 1:NTrials
-    beta_est(tr)    = sum(X(tr,:) * 0.2*ones(5,1)); 
+    beta_est(tr)    = sum(X(tr,:) * 0.2*ones(5,1)); %assuming equal weights (uniform model)
     sim_resp(tr)    = beta_est(tr) + normrnd(0,10);
 
     xRange  = 0:0.1:100;

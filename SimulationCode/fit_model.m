@@ -10,25 +10,24 @@ if nargin < 3
     data = sub;
 end
 
+switch model 
+case 'single_LR'
+    param(1) = struct('name','lr','lb',0,'ub',1e-6); %set name, lower bound, upper bound
+    param(2) = struct('name', 'sigma', 'lb', 5, 'ub', 10);
+case 'constant'
+    param(1) = struct('name', 'sigma', 'lb', 5, 'ub', 10);
+end
+
 %% Options
 starts = 5;
    
 %% Fit
 for subject = 1:length(data)
+    f = @(x) likfun_constant_beta(x, data(subject));
     disp(['Fitting subject ' int2str(subject)])
-    for start = 1:starts
+    parfor start = 1:starts
 
         %define likelihood function
-            switch model 
-                case 'single_LR'
-                param(1) = struct('name','lr','lb',0,'ub',1e-6); %set name, lower bound, upper bound
-                param(2) = struct('name', 'sigma', 'lb', 5, 'ub', 10);
-                f = @(x) likfun_single_LR(x, data(subject));
-          
-                case 'constant'
-                param(1) = struct('name', 'sigma', 'lb', .0001, 'ub', 100);
-                f = @(x) likfun_constant_beta(x, data(subject));
-            end
             
          %set fminunc starting values
          x0 = zeros(1, length(param)); % initialize at zero
@@ -46,8 +45,8 @@ for subject = 1:length(data)
                 results(subject, start).x = x;
             %end
             results(subject, start).sub = subject;
-            save(results_filename, 'results')
     end
+    save(results_filename, 'results')
 end
     
     
