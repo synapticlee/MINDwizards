@@ -19,8 +19,9 @@ gX = @() (rand(D,1))*100;
 % noise function
 nZ = @() 0 * randn(1);
 
-%number of subjects
-%num_subs = 1000;
+% number of trials back people can remember
+trial_mem = 5;
+
 
 %% simulate ===============================================================
 % initialize learning algorithm
@@ -37,6 +38,8 @@ T = 500;
     if t > 1
         dist = sqrt(sum((x_store - X).^2));
         Rhat = correct_response_store(dist == min(dist));
+    elseif t > 5
+       Rhat = correct_response_store(dist == min(dist(t-5:t))); 
     else
         Rhat = 50 + 10*randn(1);
     end
@@ -71,11 +74,6 @@ bar([thetas(1) beta(1); thetas(2) beta(2); thetas(3) beta(3); thetas(4) beta(4);
 xlabel('Predictor')
 ylabel('Weight')
 legend('Model Prediction', 'True Weight')
-
-
-
-
-
 
 
 
