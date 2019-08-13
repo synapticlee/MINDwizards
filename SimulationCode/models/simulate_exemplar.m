@@ -12,6 +12,7 @@ D = 5;
 % regression coefficients
 load('../../Data/data.mat')
 betaWeights = sort(sub(1).weights(1,:), 'descend');
+clear sub
 
 % generative function for sampling stimuli 
 % note stimulus values are between 0 and 100
@@ -82,7 +83,7 @@ for subject = 1:num_subs
 end
 
 %% save data
-save('../../../MINDSimulationData/simulated_exemplar', 'sub')
+save('../../../simulated_exemplar', 'sub')
 
  %% Plot errors over time
 % figure(1); clf;  hold on;

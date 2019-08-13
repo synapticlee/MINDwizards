@@ -7,6 +7,7 @@ D = 5;
 % regression coefficients
 load('../../Data/data.mat')
 betaWeights = sort(sub(1).weights(1,:), 'descend');
+clear sub
 
 % generative function for sampling stimuli 
 % note stimulus values are between 0 and 100
