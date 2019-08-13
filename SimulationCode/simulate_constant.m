@@ -1,6 +1,6 @@
 %simulate a situation where the weights are just fixed/constant at 1 
 
-function choiceProb = simulate_constant() %X, pars)
+%function choiceProb = simulate_constant() %X, pars)
 
 doDebug = false;
 addpath(genpath('~/OneDrive - University College London/15_SummerSchools/MIND/MINDwizards'))
@@ -31,7 +31,10 @@ for sj = 1:NSubj
     end
 end
 
-keyboard
-
-NPlots = ceil(sqrt(NSubj));
+NRows   = ceil(sqrt(NSubj));
+NPlots  = NRows*NRows;
+figure
 for pl = 1:NPlots
+    subplot(NRows,NRows, pl)
+    histogram(choiceProb{sj}, 0:0.001:0.05)
+end
