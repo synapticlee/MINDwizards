@@ -20,7 +20,7 @@ gX = @() (rand(D,1))*100;
 nZ = @() 0 * randn(1);
 
 % number of trials back people can remember
-trial_mem = 100;
+trial_mem = 20;
 
 
 %% simulate ===============================================================
