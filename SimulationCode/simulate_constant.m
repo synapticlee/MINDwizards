@@ -1,6 +1,6 @@
 %simulate a situation where the weights are just fixed/constant at 1 
 
-%function choiceProb = simulate_constant() %X, pars)
+function choiceProb = simulate_constant() %X, pars)
 
 doDebug = false;
 addpath(genpath('~/OneDrive - University College London/15_SummerSchools/MIND/MINDwizards'))
