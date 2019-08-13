@@ -66,6 +66,6 @@ end
 
 
 %% save data
-save('../../SimulationData/simulated_1LR', 'sub')
+save('../../../SimulationData/simulated_1LR', 'sub')
 
 end
