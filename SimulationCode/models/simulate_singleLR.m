@@ -1,10 +1,12 @@
+function simulate_singleLR()
 %% generative parameters ==================================================
 
 % number of dimensions
 D = 5;
 
 % regression coefficients
-beta = [.55; .25; .12; .06; .02];
+load('../../Data/data.mat')
+betaWeights = sort(sub(1).weights(1,:), 'descend');
 
 % generative function for sampling stimuli 
 % note stimulus values are between 0 and 100
@@ -36,7 +38,7 @@ for subject = 1:num_subs
     % sample X for this trial
     X = gX();
     sub(subject).bars(trial, :) = X;
-    correct_response = beta' * X + nZ();
+    correct_response = betaWeights' * X + nZ();
     sub(subject).correct_response(trial) = correct_response; 
     
      % compute prediction
