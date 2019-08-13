@@ -20,7 +20,7 @@ gX = @() (rand(D,1))*100;
 nZ = @() 0 * randn(1);
 
 % number of trials back people can remember
-trial_mem = 5;
+trial_mem = 1;
 
 
 %% simulate ===============================================================
@@ -35,11 +35,12 @@ T = 500;
     X = gX();
     
     %compute prediction
-    if t > 1
+    if t > 1 && t < 5
         dist = sqrt(sum((x_store - X).^2));
         Rhat = correct_response_store(dist == min(dist));
     elseif t > 5
-       Rhat = correct_response_store(dist == min(dist(t-5:t))); 
+       dist = sqrt(sum((x_store - X).^2));
+       Rhat = correct_response_store(dist == min(dist(t-1-trial_mem:t-1))); 
     else
         Rhat = 50 + 10*randn(1);
     end
