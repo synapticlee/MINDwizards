@@ -4,15 +4,15 @@ function [ nloglik ] = likfun_single_LR( params, data )
 num_trials = data.nTrials;
 alpha = params(1);
 sigma = params(2);
-D = 5;
+numDim = 5;
 
 
 %Initialize matrices with theta and probability estimates
-theta_estimates = zeros(num_trials, D);
+theta_estimates = zeros(num_trials, numDim);
 choice_probs =  zeros(num_trials, 1);
 
 %Initialize starting values for theta
-theta = .25*ones(D,1)';
+theta = .2*ones(numDim,1)';
 
 for trial = 1:num_trials
     response = data.response(trial);

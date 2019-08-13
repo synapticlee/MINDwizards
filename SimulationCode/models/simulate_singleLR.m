@@ -1,5 +1,3 @@
-clear
-
 %% generative parameters ==================================================
 
 % number of dimensions
