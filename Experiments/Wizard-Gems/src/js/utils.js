@@ -5,19 +5,6 @@ import "@dashboardcode/bsmultiselect";
 import "jspsych";
 import moment from "moment/src/moment";
 
-export function getShuffledGemColors() {
-  const gem_colors = {
-    blue: "#00C3FF",
-    red: "#FF4100",
-    yellow: "#FFB60D",
-    green: "#44E80C",
-    purple: "#9200F0",
-  };
-  const shuffled_color_names = _.shuffle(Object.keys(gem_colors));
-  const shuffled_gem_colors = _.pick(gem_colors, shuffled_color_names);
-  return Object.values(shuffled_gem_colors);
-}
-
 export async function endExperiment(props) {
   jsPsych.data.addProperties(props);
   const file_name = `${props.experiment_name}_data_${props.anon_id}_${

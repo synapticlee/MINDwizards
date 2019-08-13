@@ -10,7 +10,6 @@ import "./render-mustache-template";
 import "./wizard-gem-trial";
 import moment from "moment/src/moment";
 import {
-  getShuffledGemColors,
   saveAttrition,
   saveData,
   getIpAddress,
@@ -19,6 +18,11 @@ import {
   generateCompletionCode,
   endExperiment,
 } from "./utils";
+import {
+  generateRandomGemValues,
+  getShuffledGemColors,
+  getCorrectAnswer,
+} from "./gems";
 import "jspsych/css/jspsych.css";
 import "bootswatch/dist/flatly/bootstrap.min.css";
 import "@dashboardcode/bsmultiselect/dist/css/BsMultiSelect.min.css";
@@ -29,11 +33,22 @@ const demo_mode = true;
 // * Setup
 document.title = "Wizard Gems";
 
+// * Functions
+
 // * Constants
 const experiment_name = "wizard_gems";
 const version_date = "2019-08-10";
 const default_iti = 500; // in ms; bug in jspsych 6.0.x where this param isn't respected at jsPsych.init
 const start_time = moment.utc().format();
+const equation_weights = _.shuffle([0.55, 0.25, 0.125, 0.0625, 0.0125]); // ! randomizing every time
+const num_gems = 5;
+const gem_colors = {
+  blue: "#00C3FF",
+  red: "#FF4100",
+  yellow: "#FFB60D",
+  green: "#44E80C",
+  purple: "#9200F0",
+};
 
 const consent = {
   type: "render-mustache-template",
@@ -128,33 +143,41 @@ const debriefing = {
   },
 };
 
+// * Example trial
+const gem_values = generateRandomGemValues(num_gems);
+console.log("gem_values", gem_values);
+const correct_answer = getCorrectAnswer(gem_values, equation_weights);
+console.log("correct_answer", correct_answer);
 const example_trial = {
   type: "wizard-gem-trial",
   phase: "learning",
   container_width: 700,
-  gem_values: [30, 20, 50, 10, 5],
-  correct_answer: 80,
-  gem_colors: getShuffledGemColors(),
+  gem_values: gem_values,
+  correct_answer: correct_answer,
+  gem_colors: getShuffledGemColors(gem_colors),
   feedback_color: "rgba(0, 0, 0, 1)",
   bar_length: 300,
-  bar_thickness: 35,
+  bar_thickness: 65,
   prompt:
-    "<p>How much is this wizard gem worth? Respond by clicking on the right-most bar.</p>",
+    "<p>How much is this wizard gem worth? Respond by clicking on the right-most bar. " +
+    "After recording your response, you may press the 'Next' button. " +
+    "Only your initial response will be recorded.</p>",
+  post_trial_gap: default_iti,
 };
 
 // * Preload everything
 // const preload_stimuli = [];
 
 // * Timeline
-// const timeline = [example_trial];
-const timeline = [
-  consent,
-  attrition,
-  instructions,
-  example_trial,
-  survey,
-  debriefing,
-];
+const timeline = [example_trial];
+// const timeline = [
+//   consent,
+//   attrition,
+//   instructions,
+//   example_trial,
+//   survey,
+//   debriefing,
+// ];
 
 // * Start the experiment
 jsPsych.init({

@@ -31,6 +31,7 @@
 
 progress {
   border: none;
+  border-radius: 0px;
 }
 
 progress[value] {
@@ -41,8 +42,13 @@ progress[value] {
 }
 
 progress[value]::-webkit-progress-bar {
-  background-color: #eee;
-  border-radius: 2px;
+  background-color: #e7e7e7;
+  border-radius: 0px;
+}
+
+progress[value]::-moz-progress-bar {
+  background-color: #e7e7e7;
+  border-radius: 0px;
 }
 
 .slider {
@@ -53,8 +59,8 @@ progress[value]::-webkit-progress-bar {
   background: rgba(231, 231, 231, 0);
   outline: none;
   opacity: 1;
-  -webkit-transition: 0.5s;
-  transition: 0.5s ease all;
+  /* -webkit-transition: 0.5s;
+  transition: 0.5s ease all; */
   font-size: 0px;
   /*Needed to prevent FireFox from diplaying weird grey line. */
 }

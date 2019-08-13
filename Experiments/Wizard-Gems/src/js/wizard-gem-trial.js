@@ -96,9 +96,14 @@ jsPsych.plugins["wizard-gem-trial"] = (function() {
   plugin.trial = function(display_element, trial) {
     // * Functions
     function addCSSRuleToDocument(rule) {
-      let style = document.createElement("style");
-      let sheet = document.head.appendChild(style).sheet;
-      sheet.insertRule(rule, 0);
+      try {
+        let style = document.createElement("style");
+        let sheet = document.head.appendChild(style).sheet;
+        sheet.insertRule(rule, 0);
+      } catch (error) {
+        console.log("Failed to add rule; running on Chrome?");
+        console.error(error);
+      }
     }
 
     // store response
@@ -131,21 +136,14 @@ jsPsych.plugins["wizard-gem-trial"] = (function() {
       const chrome_progress_bar_color_rule = `#gem_${i}::-webkit-progress-value { background-color: ${gem_color}; }`;
       const mozilla_progress_bar_color_rule = `#gem_${i}::-moz-progress-bar { background-color: ${gem_color}; }`;
       addCSSRuleToDocument(chrome_progress_bar_color_rule);
-      try {
-        addCSSRuleToDocument(mozilla_progress_bar_color_rule);
-      } catch (error) {
-        console.log(
-          "Likely running on Chrome, so Firefox rule could not be added!"
-        );
-        console.error(error);
-      }
+      addCSSRuleToDocument(mozilla_progress_bar_color_rule);
     }
     // add final slider and correct answer
     new_html += `<div class="col-2 divider">`;
 
-    new_html += `<progress id="correctAnswer" style="position: absolute; width:${
-      trial.bar_length
-    }px; height:${
+    new_html += `<progress id="correctAnswer"
+    class="invis"
+    style="position: absolute; width:${trial.bar_length}px; height:${
       trial.bar_thickness
     }px; transform:  rotate(-90deg) translateX(${
       bar_offsets.x
@@ -174,15 +172,17 @@ jsPsych.plugins["wizard-gem-trial"] = (function() {
     const mozilla_progress_bar_color_rule = `#correctAnswer::-moz-progress-bar { background-color: ${
       trial.feedback_color
     }; }`;
+
+    const chrome_slider_thumb_rule = `.slider::-webkit-slider-thumb { height: ${
+      trial.bar_thickness
+    }px}`;
+    const mozilla_slider_thumb_rule = `.slider::-moz-range-thumb { height: ${
+      trial.bar_thickness
+    }px}`;
     addCSSRuleToDocument(chrome_progress_bar_color_rule);
-    try {
-      addCSSRuleToDocument(mozilla_progress_bar_color_rule);
-    } catch (error) {
-      console.log(
-        "Likely running on Chrome, so Firefox rule could not be added!"
-      );
-      console.error(error);
-    }
+    addCSSRuleToDocument(mozilla_progress_bar_color_rule);
+    addCSSRuleToDocument(chrome_slider_thumb_rule);
+    addCSSRuleToDocument(mozilla_slider_thumb_rule);
 
     // add prompt
     if (trial.prompt !== null) {
@@ -209,6 +209,8 @@ jsPsych.plugins["wizard-gem-trial"] = (function() {
         response.answer = $(this).val();
       }
       $(this).removeClass("not-clicked");
+      //   $(this).prop("disabled", true);
+      $("#correctAnswer").removeClass("invis");
       $("#continueButtonContainer").removeClass("invis");
     });
 
