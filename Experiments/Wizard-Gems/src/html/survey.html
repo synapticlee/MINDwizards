@@ -1,0 +1,45 @@
+<!-- INITIAL FORM -->
+<div id="surveyFormContainer" class="container text-left">
+    <form id="surveyForm" name="surveyForm" onsubmit="return false">
+        <div class="form-group">
+            <label for="age">
+                What is your age?
+            </label>
+            <input required class="form-control response" id="age" name="age" type="number" min="18" max="110">
+        </div>
+        <!-- Race: multiselect -->
+        <div class="form-group">
+            <label for="race">
+                What is your race? You may select more than one option using the checkboxes.
+                You can also search for your race by typing into the box.
+            </label>
+            <select multiple="multiple" class="form-control response" id="race" name="race">
+                <option>Black/African American</option>
+                <option>East Asian</option>
+                <option>East Indian</option>
+                <option>Middle Eastern</option>
+                <option>Native Hawaiian or Other Pacific Islander</option>
+                <option>White</option>
+                <option>Other</option>
+                <option>Prefer not to say</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="gender">
+                What is your gender? Please select the most appropriate option for you.
+            </label>
+            <select required class="form-control selectpicker response" id="gender" name="gender">
+                <option value="NA"></option>
+                <option>Female</option>
+                <option>Male</option>
+                <option>Other</option>
+                <option>Prefer not to say</option>
+            </select>
+        </div>
+
+        <div id="surveyFormButtonContainer" class="container text-center my-5">
+            <button id="surveyFormButton" class="btn btn-lg btn-primary">Next</button>
+        </div>
+    </form>
+</div>
