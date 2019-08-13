@@ -1,5 +1,9 @@
 clear
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> d081043b0829e95539bd50cbbb4f8939dfb037ce
 %% generative parameters ==================================================
 
 % number of dimensions
@@ -27,10 +31,13 @@ T = 500;
 
 for subject = 1:num_subs
     alpha = unifrnd(0, 1e-4);
-    sigma = unifrnd(5, 10);
+    sigma = unifrnd(5, 100);
     sub(subject).alpha = alpha;
     sub(subject).sigma = sigma;
+<<<<<<< HEAD
     sub(subject).nTrials = T;
+=======
+>>>>>>> d081043b0829e95539bd50cbbb4f8939dfb037ce
     for trial = 1:T
    
         %theta_store(:,t, alpha_vals, sigma_vals) = theta;
@@ -46,12 +53,6 @@ for subject = 1:num_subs
     
      % compute response
      response = Rhat + sigma * randn(1);
-     if response < 0
-         response = 0;
-     elseif response > 100
-         response = 100;
-     end
-        
      sub(subject).response(trial) = response; 
     
      %  compute prediction error
@@ -66,5 +67,28 @@ end
 
 
 %% save data
-save('../../simulated_1LR', 'sub')
+<<<<<<< HEAD
+save('simulated_1LR', 'sub')
+=======
+save('sub', 'simulated_1LR')
 
+>>>>>>> d081043b0829e95539bd50cbbb4f8939dfb037ce
+
+%% Plot
+% figure(1); clf;  hold on;
+% plot(theta_store')
+% for i = 1:D
+%     plot([0 T], [1 1]*beta(i), 'k--')
+% end
+% ylim([0 1])
+% xlabel('time step')
+% ylabel('regression parameter, \theta')
+% 
+% 
+% figure(2); clf; hold on;
+% plot(theta_store(1,:), theta_store(2,:))
+% xlim([0 1]); ylim([0 1])
+% plot(theta_store(1,1), theta_store(2,1), 'r.')
+% plot(beta(1), beta(2), 'r*')
+% xlabel('weight 1')
+% ylabel('weight 2')
