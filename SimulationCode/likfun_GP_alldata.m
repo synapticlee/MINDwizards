@@ -1,10 +1,10 @@
 function log_marginal_likelihood = likfun_GP_alldata(params, data)
 
 % Parameters
-num_trials = data.nTrials;
-lambda = params(1); %best to make quite high
-sigma2_f = params(2);
-sigma2_e = params(3); %probably fairly low
+num_trials  = data.nTrials;
+lambda      = params(1); %
+sigma2_f    = params(2); %scale 
+sigma2_e    = params(3); %probably fairly low
 
 % the data and responses
 y = data.response(1:num_trials);
