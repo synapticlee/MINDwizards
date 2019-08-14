@@ -1,3 +1,7 @@
+// 2019-08-13: 0.33 weights for 3 out of 5 bars, the other 2 at 0.
+
+// TODO: trial numbers
+
 import "jquery";
 import "jquery-validation";
 import seedrandom from "seedrandom";
@@ -28,7 +32,7 @@ import "bootswatch/dist/flatly/bootstrap.min.css";
 import "@dashboardcode/bsmultiselect/dist/css/BsMultiSelect.min.css";
 import "../css/index.css";
 
-const demo_mode = true;
+const demo_mode = false;
 
 // * Setup
 document.title = "Wizard Gems";
@@ -38,17 +42,47 @@ document.title = "Wizard Gems";
 // * Constants
 const experiment_name = "wizard_gems";
 const version_date = "2019-08-10";
-const default_iti = 500; // in ms; bug in jspsych 6.0.x where this param isn't respected at jsPsych.init
 const start_time = moment.utc().format();
-const equation_weights = _.shuffle([0.55, 0.25, 0.125, 0.0625, 0.0125]); // ! randomizing every time
+const default_iti = 500; // in ms; bug in jspsych 6.0.x where this param isn't respected at jsPsych.init
+const equation_weights = _.shuffle([1 / 3, 1 / 3, 1 / 3, 0, 0]);
+const force_adjustment_to_correct_answer = false;
+const feedback_duration = 2; // in seconds
 const num_gems = 5;
-const gem_colors = {
-  blue: "#00C3FF",
-  red: "#FF4100",
-  yellow: "#FFB60D",
-  green: "#44E80C",
-  purple: "#9200F0",
+const margin_of_error = 2; // plus or minus the correct_answer for allowed response
+const num_trials = 100;
+
+const feedback_prompt = {
+  button:
+    "<p>How much is this wizard gem worth? " +
+    "Respond by clicking on the right-most bar. " +
+    "After recording your response and adjusting " +
+    "to the correct response, " +
+    "you may press the 'Next' button. " +
+    "Only your initial response will be recorded.</p>",
+  duration:
+    "<p>How much is this wizard gem worth? " +
+    "Respond by clicking on the right-most bar. " +
+    "After recording your response, you will automatically " +
+    "move on to the next trial after a brief delay.",
 };
+const gem_colors = {
+  blue: "#005BA8",
+  red: "#FF4100",
+  orange: "#DA7100",
+  green: "#38A600",
+  grey: "#6F9CA4",
+};
+
+const gem_icons = {
+  blue: "src/images/water.svg",
+  red: "src/images/heart.svg",
+  orange: "src/images/fire.svg",
+  green: "src/images/earth.svg",
+  grey: "src/images/wind.svg",
+};
+
+const shuffled_gem_colors = getShuffledGemColors(gem_colors);
+const shuffled_gem_icons = _.pick(gem_icons, Object.keys(shuffled_gem_colors));
 
 const consent = {
   type: "render-mustache-template",
@@ -85,7 +119,7 @@ const attrition = {
     }
     return false;
   },
-  on_finish: saveAttrition,
+  on_finish: () => saveAttrition(experiment_name),
 };
 
 const instructions = {
@@ -97,7 +131,7 @@ const instructions = {
     experiment_phase: "instructions",
   },
   render_data: {},
-  on_start: saveAttrition,
+  on_start: () => saveAttrition(experiment_name),
 };
 
 /* Logic for the survey is a little tricky, since
@@ -145,31 +179,65 @@ const debriefing = {
 
 // * Example trial
 const gem_values = generateRandomGemValues(num_gems);
-console.log("gem_values", gem_values);
 const correct_answer = getCorrectAnswer(gem_values, equation_weights);
-console.log("correct_answer", correct_answer);
 const example_trial = {
   type: "wizard-gem-trial",
   phase: "learning",
   container_width: 700,
   gem_values: gem_values,
   correct_answer: correct_answer,
-  gem_colors: getShuffledGemColors(gem_colors),
+  gem_colors: Object.values(shuffled_gem_colors),
+  gem_icons: shuffled_gem_icons,
+  margin_of_error,
+  force_adjustment_to_correct_answer,
+  feedback_duration,
   feedback_color: "rgba(0, 0, 0, 1)",
   bar_length: 300,
   bar_thickness: 65,
   prompt:
-    "<p>How much is this wizard gem worth? Respond by clicking on the right-most bar. " +
-    "After recording your response, you may press the 'Next' button. " +
-    "Only your initial response will be recorded.</p>",
+    feedback_duration !== null
+      ? feedback_prompt.duration
+      : feedback_prompt.button,
   post_trial_gap: default_iti,
 };
+
+const all_trials = [];
+for (const i of _.range(num_trials)) {
+  const gem_values = generateRandomGemValues(num_gems);
+  const correct_answer = getCorrectAnswer(gem_values, equation_weights);
+  const this_trial = {
+    type: "wizard-gem-trial",
+    phase: "learning",
+    container_width: 700,
+    gem_values: gem_values,
+    correct_answer: correct_answer,
+    gem_color_names: Object.keys(shuffled_gem_colors),
+    gem_colors: Object.values(shuffled_gem_colors),
+    gem_icons: shuffled_gem_icons,
+    margin_of_error,
+    force_adjustment_to_correct_answer,
+    feedback_duration,
+    feedback_color: "rgba(0, 0, 0, 1)",
+    bar_length: 300,
+    bar_thickness: 65,
+    prompt:
+      feedback_duration !== null
+        ? feedback_prompt.duration
+        : feedback_prompt.button,
+    post_trial_gap: default_iti,
+    data: {
+      gem_weights: JSON.stringify(equation_weights),
+    },
+  };
+  all_trials.push(this_trial);
+}
 
 // * Preload everything
 // const preload_stimuli = [];
 
 // * Timeline
-const timeline = [example_trial];
+const timeline = [instructions, ...all_trials];
+// const timeline = [instructions, example_trial];
 // const timeline = [
 //   consent,
 //   attrition,
