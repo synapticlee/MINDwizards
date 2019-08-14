@@ -11,7 +11,7 @@ beta = rand(D,1);
 beta = beta / sum(beta);
 
 %invtemp for softmax
-invTemp = 20;
+invTemp = 5;
 
 % generative function for sampling stimuli 
 % note stimulus values are between -1 and +1

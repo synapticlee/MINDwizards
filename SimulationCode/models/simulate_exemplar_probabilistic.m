@@ -1,9 +1,14 @@
-function simulate_exemplar()
+function simulate_exemplar_probabilistic()
 
-%% Simulate exemplar
+%% Simulate exemplar probabilistically
 % In this simulation, we assume that agents make predictions by sampling
-% the most similar instance they previously experienced, based on the
-% euclidean distance between Xs
+% similar instances they previously experienced, based on the
+% euclidean distance between Xs.
+
+% Specifically, agents:
+% 1. Weight trials based on their recency.
+% 2. Weight trials based on their similarity (Euclidean distance) to previous trials.
+% 3. Average to get new prediction.
 
 %% generative parameters ==================================================
 % number of dimensions
@@ -31,10 +36,11 @@ theta = rand(D,1);
 T = 500;
 
 for subject = 1:num_subs
-    trial_mem = round(unifrnd(1, 25)); % number of trials back people can remember
-    sigma = unifrnd(2, 10);
-    sub(subject).trial_mem = trial_mem;
-    sub(subject).sigma = sigma;
+    mem_decay = unifrnd(0, 10);
+    similarity_weight = unifrnd(0, 10);
+    sigma = unifrnd(5, 10);
+    sub(subject).mem_decay = mem_decay;
+    sub(subject).similarity_weight = similarity_weight;
     sub(subject).nTrials = T;
     for trial = 1:T
      
@@ -42,13 +48,24 @@ for subject = 1:num_subs
         X = gX();
     
         %compute prediction
-        if trial > 1 && trial < trial_mem
-            dist = sqrt(sum((x_store - X).^2));
-            Rhat = correct_response_store(dist == min(dist));
-        elseif trial > trial_mem
-            dist = sqrt(sum((x_store - X).^2));
-            Rhat = correct_response_store(dist == min(dist(trial-trial_mem:trial-1))); 
-        else
+        if trial > 1 
+            dist = sqrt(sum((x_store - X).^2)); %get matrix of distances
+            dist = dist(1:trial-1);
+ 
+            %weight by similarity weight
+            dist_weighted = dist.^-(similarity_weight);
+            
+            %weight by recency
+            recency_weight = [1:trial-1].^mem_decay;
+            
+            %compute prediction weights
+            pred_weights = (dist_weighted .* recency_weight);
+            pred_weights = pred_weights ./(sum(pred_weights));
+            
+            %compute weighted predictions
+            Rhat = sum((pred_weights .* correct_response_store(1:trial-1)));  
+            
+        else 
             Rhat = 50 + 10*randn(1);
         end
     
@@ -83,23 +100,5 @@ for subject = 1:num_subs
 end
 
 %% save data
-save('../../../simulated_exemplar', 'sub')
-
- %% Plot errors over time
-% figure(1); clf;  hold on;
-% plot(error_store')
-% xlabel('Trial')
-% ylabel('Error')
-% 
-% %% Plot regression weights
-% thetas = regress(Rhat_store', x_store');
-% 
-% figure
-% bar([thetas(1) beta(1); thetas(2) beta(2); thetas(3) beta(3); thetas(4) beta(4); thetas(5) beta(5)]);
-% xlabel('Predictor')
-% ylabel('Weight')
-% legend('Model Prediction', 'True Weight')
-
-end
-
+save('../../../simulated_exemplar_probabalistic', 'sub')
 
