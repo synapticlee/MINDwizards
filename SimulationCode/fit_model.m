@@ -11,7 +11,7 @@ if nargin < 3
 end
 
 %% Options
-starts = 5;
+starts = 3;
    
 %% Fit
 for subject = 1:length(data)
@@ -30,16 +30,22 @@ for subject = 1:length(data)
                 param(2) = struct('name', 'sigma', 'lb', .0001, 'ub', 100);
                 param(3) = struct('name','invTemp','lb',0,'ub',100);
                 f = @(x) likfun_attention_weight(x, data(subject));
+                case 'gp'
+                param(1) = struct('name','lr','lb',50,'ub',90); % length scale
+                param(2) = struct('name', 'sigma', 'lb', 12, 'ub', 20); % RBF variance
+                param(3) = struct('name', 'sigma', 'lb', 0, 'ub', 0.2); % response noise
+                f = @(x) likfun_GP_alldata(x, data(subject));
             end
             
          %set fminunc starting values
          x0 = zeros(1, length(param)); % initialize at zero
-            for p = 1:length(param)
-                x0(p) = unifrnd(param(p).lb, param(p).ub); %pick random starting values
-            end
+        for p = 1:length(param)
+            x0(p) = unifrnd(param(p).lb, param(p).ub); %pick random starting values
+        end
             
         % find min negative log likelihood = maximum likelihood for each subject
         [x, nloglik] = fmincon(f, x0);
+        disp(x)
             
         % store min negative log likelihood and associated parameter values
             %if starts == 1 || nloglik < results(subject).nll
