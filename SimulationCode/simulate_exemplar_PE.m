@@ -21,7 +21,7 @@ gX = @() (rand(D,1))*100;
 nZ = @() 0 * randn(1);
 
 % number of trials people can remember
-trial_mem = 100;
+trial_mem = 10;
 
 
 %% simulate ===============================================================
@@ -41,9 +41,9 @@ T = 500;
         Rhat = correct_response_store(dist == min(dist));
     elseif t > trial_mem
        dist = sqrt(sum((x_store - X).^2));
-       [entropy_sorted, index] = sort(entropy);
-       min_entropy_trials = (index(1:trial_mem));
-       Rhat = correct_response_store(dist == min(dist(min_entropy_trials))); 
+       [error_sorted, index] = sort(abs(error_store), 'descend');
+       max_PE_trials = (index(1:trial_mem));
+       Rhat = correct_response_store(dist == min(dist(max_PE_trials))); 
     else
         Rhat = 50 + 10*randn(1);
     end
@@ -53,9 +53,6 @@ T = 500;
     
     %store X's
     x_store(:,t) = X;
-    
-    %compute entropy over the bars
-    entropy = -1*sum(x_store/100.*log(x_store./100));
     
     %add correct response to store
     correct_response = beta' * X + nZ();

@@ -6,7 +6,7 @@ function [ results ] = fit_model( model, results_filename, data )
 %OUTPUT: results structure
 
 if nargin < 3
-    load('data.mat');
+    load('../Data/data.mat');
     data = sub;
 end
 
@@ -30,6 +30,13 @@ for subject = 1:length(data)
                 param(2) = struct('name', 'sigma', 'lb', .0001, 'ub', 100);
                 param(3) = struct('name','invTemp','lb',0,'ub',100);
                 f = @(x) likfun_attention_weight(x, data(subject));
+                
+                case 'exemplar_probabilistic'
+                param(1) = struct('name','mem_decay','lb',0,'ub',10);
+                param(2) = struct('name', 'similarity_weight', 'lb', 0, 'ub', 10);
+                param(3) = struct('name','sigma','lb', 5,'ub', 10);
+                f = @(x) likfun_exemplar_probabilistic(x, data(subject));
+                
             end
             
          %set fminunc starting values
