@@ -96,7 +96,7 @@ if (process.env.NODE_ENV === "production") {
         terserOptions: {
           mangle: true,
           compress: {
-            drop_console: true,
+            drop_console: false,
           },
         },
       }),

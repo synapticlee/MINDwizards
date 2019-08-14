@@ -3,7 +3,7 @@ import "lodash";
 export function getShuffledGemColors(gem_colors) {
   const shuffled_color_names = _.shuffle(Object.keys(gem_colors));
   const shuffled_gem_colors = _.pick(gem_colors, shuffled_color_names);
-  return Object.values(shuffled_gem_colors);
+  return shuffled_gem_colors;
 }
 
 export function generateRandomGemValues(num_values) {

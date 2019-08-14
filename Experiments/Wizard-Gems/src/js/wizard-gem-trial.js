@@ -41,6 +41,13 @@ jsPsych.plugins["wizard-gem-trial"] = (function() {
         array: true,
         description: "The gem values to be displayed",
       },
+      gem_color_names: {
+        type: jsPsych.plugins.parameterType.STRING,
+        pretty_name: "Gem color names",
+        default: undefined,
+        array: true,
+        description: "The color names of the gems to be displayed",
+      },
       gem_colors: {
         type: jsPsych.plugins.parameterType.STRING,
         pretty_name: "Gem colors",
@@ -72,6 +79,25 @@ jsPsych.plugins["wizard-gem-trial"] = (function() {
         default: null,
         description: "The height of the presented bars in pixels.",
       },
+      gem_icons: {
+        type: jsPsych.plugins.parameterType.STRING,
+        pretty_name: "Gem icons",
+        array: true,
+        default: null,
+        description: "The icons to show beneath the bars.",
+      },
+      margin_of_error: {
+        type: jsPsych.plugins.parameterType.INT,
+        pretty_name: "Margin of response error",
+        default: 2,
+        description: "The margin of error for feedback adjustment.",
+      },
+      force_adjustment_to_correct_answer: {
+        type: jsPsych.plugins.parameterType.BOOL,
+        pretty_name: "Force adjustment to correct answer",
+        default: false,
+        description: "Force the subject to adjust to the correct answer.",
+      },
       prompt: {
         type: jsPsych.plugins.parameterType.STRING,
         pretty_name: "Prompt",
@@ -89,6 +115,12 @@ jsPsych.plugins["wizard-gem-trial"] = (function() {
         pretty_name: "Trial duration",
         default: null,
         description: "How long to show trial before it ends.",
+      },
+      feedback_duration: {
+        type: jsPsych.plugins.parameterType.INT,
+        pretty_name: "Feedback duration",
+        default: null,
+        description: "How long to show the feedback before the trial ends.",
       },
     },
   };
@@ -118,7 +150,7 @@ jsPsych.plugins["wizard-gem-trial"] = (function() {
       x: -(trial.bar_length - trial.bar_thickness) / 2,
       y: trial.bar_length > 100 ? -(trial.bar_length - 100) / 2 : 0,
     };
-    let new_html = `<div class="container stimulus-container my-5" id="gemStimulusContainer">`;
+    let new_html = `<div class="container stimulus-container my-2" id="gemStimulusContainer">`;
     new_html += `<div class="row">`;
     for (const [i, gem_value] of trial.gem_values.entries()) {
       const gem_color = trial.gem_colors[i];
@@ -131,7 +163,7 @@ jsPsych.plugins["wizard-gem-trial"] = (function() {
         bar_offsets.x
       }px) translateY(${
         bar_offsets.y
-      }px); color:${gem_color};" min="0" max="100" value="${gem_value}"/>`;
+      }px); color:${gem_color};" min="0" max="100" value="${gem_value}" step="any"/>`;
       new_html += `</div>`;
       const chrome_progress_bar_color_rule = `#gem_${i}::-webkit-progress-value { background-color: ${gem_color}; }`;
       const mozilla_progress_bar_color_rule = `#gem_${i}::-moz-progress-bar { background-color: ${gem_color}; }`;
@@ -149,7 +181,7 @@ jsPsych.plugins["wizard-gem-trial"] = (function() {
       bar_offsets.x
     }px) translateY(${-trial.bar_length / 2}px);" min="0" max="100" value="${
       trial.correct_answer
-    }"></progress>`;
+    }" step="any"></progress>`;
 
     new_html += `<input type="range" id="responseSlider" style="position: absolute; width:${
       trial.bar_length
@@ -160,9 +192,20 @@ jsPsych.plugins["wizard-gem-trial"] = (function() {
     }px) translateY(${-trial.bar_length /
       2}px);" class="slider text-center not-clicked" value="0" min="0" max="100">`;
     new_html += `</div>`;
-
-    // Close all divs
     new_html += `</div>`;
+
+    // draw gem icons
+    if (trial.gem_icons !== null) {
+      new_html += `<div class="row">`;
+      console.log("icon values:", Object.values(trial.gem_icons));
+      for (const icon of Object.values(trial.gem_icons)) {
+        new_html += `<div class="col-2">`;
+        new_html += `<img class="gem-icon text-center" src="${icon}"/>`;
+        new_html += `</div>`;
+      }
+      new_html += `</div>`;
+    }
+    // Close div
     new_html += `</div>`;
 
     //  Add rule coloring feedback color
@@ -191,7 +234,7 @@ jsPsych.plugins["wizard-gem-trial"] = (function() {
 
     // add completion button
     new_html += `<div id="continueButtonContainer" class="container my-1 invis">
-    <button class="btn btn-lg btn-primary" id="continueButton">Next</button>
+    <button class="btn btn-xl btn-primary" id="continueButton">Next</button>
     </div>`;
 
     // draw!
@@ -209,9 +252,23 @@ jsPsych.plugins["wizard-gem-trial"] = (function() {
         response.answer = $(this).val();
       }
       $(this).removeClass("not-clicked");
-      //   $(this).prop("disabled", true);
       $("#correctAnswer").removeClass("invis");
-      $("#continueButtonContainer").removeClass("invis");
+      if (trial.feedback_duration !== null) {
+        setTimeout(() => end_trial(), trial.feedback_duration * 1000);
+      } else {
+        if (trial.force_adjustment_to_correct_answer) {
+          if (
+            $(this).val() >= trial.correct_answer - trial.margin_of_error &&
+            $(this).val() <= trial.correct_answer + trial.margin_of_error
+          ) {
+            $("#continueButtonContainer").removeClass("invis");
+          } else {
+            $("#continueButtonContainer").addClass("invis");
+          }
+        } else {
+          $("#continueButtonContainer").removeClass("invis");
+        }
+      }
     });
 
     // Initialize continue button
@@ -228,9 +285,12 @@ jsPsych.plugins["wizard-gem-trial"] = (function() {
       const trial_data = {
         rt: response.rt,
         page_rt: performance.now() - start_time,
-        gem_values: trial.gem_values,
+        gem_values: JSON.stringify(trial.gem_values),
         response: response.answer,
         correct_answer: trial.correct_answer,
+        gem_colors: JSON.stringify(trial.gem_colors),
+        gem_color_names: JSON.stringify(trial.gem_color_names),
+        phase: trial.phase,
       };
 
       // clear the display

@@ -24,9 +24,21 @@
 .divider {
   border-left: 2px solid black;
 }
+
 .vertical {
   position: absolute;
   transform: translateX(-50%) translateY(-50%) rotate(-90deg);
+}
+
+.gem-icon {
+  width: 100px;
+}
+
+.btn-xl {
+  padding: 0.5rem 1rem;
+  font-size: 2rem;
+  line-height: 3;
+  border-radius: 0.5rem;
 }
 
 progress {

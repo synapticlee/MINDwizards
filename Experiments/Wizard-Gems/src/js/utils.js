@@ -12,7 +12,11 @@ export async function endExperiment(props) {
   }.csv`;
   console.log("jsPsych CSV data:", jsPsych.data.get().csv());
   try {
-    const result = await saveData(file_name, jsPsych.data.get().csv());
+    const result = await saveData(
+      props.experiment_name,
+      file_name,
+      jsPsych.data.get().csv()
+    );
     console.log("result", result);
   } catch (error) {
     console.log(error);
@@ -50,13 +54,13 @@ export async function logVisitor(experiment_name, version_date) {
   await saveData(`${experiment_name}_visitors_${version_date}.csv`, csv_line);
 }
 
-export function saveAttrition() {
+export function saveAttrition(experiment_name) {
   const turk_info = Object.values(jsPsych.turk.turkInfo());
   turk_info.push(moment.utc().format()); // add condition
   console.log("turkInfo", turk_info);
   let csv_line = turk_info.join(",") + "\n";
   console.log("csv_line", csv_line);
-  saveData("attrition.csv", csv_line);
+  saveData(experiment_name, "attrition.csv", csv_line);
 }
 
 export async function saveData(experiment_name, file_name, data) {
