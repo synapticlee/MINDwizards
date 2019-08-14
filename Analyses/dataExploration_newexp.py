@@ -36,13 +36,18 @@ import scipy as sp
 # ### load the data
 
 # %%
-dataFolder = 'Data_equalWeights/'
-subList = ['1cdzsxek92mz66k_2019-08-10', '9fzhnxu5uzmnbuf_2019-08-10']
+# get the list of subjects
+subList = []
+dataFolder = '../Data_equalWeights/'
+allFileNames = os.listdir(dataFolder)
+for fileName in allFileNames:
+    if fileName.startswith('wizard_gems_data'):
+        subList.append(fileName[17:17+15])
 
 # %%
 data = pd.DataFrame()
 for iSub, sub in enumerate(subList):
-    dataSub = pd.read_csv(dataFolder+'preprocessed_data_'+sub+'.csv')
+    dataSub = pd.read_csv(dataFolder+'preprocessed_data_'+sub+'_2019-08-10.csv')
     data = data.append(dataSub)
 
 # %% [markdown]
