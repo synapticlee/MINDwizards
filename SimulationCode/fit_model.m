@@ -22,7 +22,7 @@ for subject = 1:length(data)
             switch model 
                 case 'single_LR'
                 param(1) = struct('name','lr','lb',0,'ub',1e-6); %set name, lower bound, upper bound
-                param(2) = struct('name', 'sigma', 'lb', 5, 'ub', 10);
+                param(2) = struct('name', 'sigma', 'lb', 5, 'ub', 100);
                 f = @(x) likfun_single_LR(x, data(subject));
           
                 case 'attention'
@@ -30,6 +30,7 @@ for subject = 1:length(data)
                 param(2) = struct('name', 'sigma', 'lb', 5, 'ub', 100);
                 param(3) = struct('name','invTemp','lb',.5,'ub',10);
                 f = @(x) likfun_attention(x, data(subject));
+                
                 case 'gp'
                 param(1) = struct('name','lr','lb',25,'ub',50); % length scale
                 param(2) = struct('name', 'sigma', 'lb', 10, 'ub', 20); % RBF variance
@@ -39,7 +40,7 @@ for subject = 1:length(data)
                 case 'exemplar_probabilistic'
                 param(1) = struct('name','mem_decay','lb',0,'ub',10);
                 param(2) = struct('name', 'similarity_weight', 'lb', 0, 'ub', 10);
-                param(3) = struct('name','sigma','lb', 5,'ub', 10);
+                param(3) = struct('name','sigma','lb', 5,'ub', 100);
                 f = @(x) likfun_exemplar_probabilistic(x, data(subject));
                 
                 case 'gp_pertrial'
