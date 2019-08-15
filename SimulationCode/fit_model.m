@@ -65,10 +65,10 @@ for subject = 1:length(data)
         % store min negative log likelihood and associated parameter values
             %if starts == 1 || nloglik < results(subject).nll
               %  num_unchanged = 0; %reset to 0 if likelihood changes
-                results(subject, start).nll = nloglik;
-                results(subject, start).x = x;
+                results(subject, starts).nll = nloglik;
+                results(subject, starts).x = x;
             %end
-            results(subject, start).sub = subject;
+            results(subject, starts).sub = subject;
             save(results_filename, 'results')
     end
 end
@@ -78,5 +78,6 @@ end
 %% Run fmincon
 results(subject, starts).model = model;
 results(subject, starts).num_params = length(param);
+save(results_filename, 'results')
     
 end
