@@ -44,9 +44,9 @@ for subject = 1:length(data)
                 f = @(x) likfun_exemplar_probabilistic(x, data(subject));
                 
                 case 'gp_pertrial'
-                param(1) = struct('name', 'lambda', 'lb', 25,'ub', 100); % length scale
-                param(2) = struct('name', 'sigma2_f', 'lb', 10, 'ub', 100); % RBF variance
-                param(3) = struct('name', 'sigma2_e', 'lb', 10, 'ub', 100); % noise in the generative model
+                param(1) = struct('name', 'lambda', 'lb', 0,'ub', inf, 'lbs', 25, 'ubs', 100); % length scale
+                param(2) = struct('name', 'sigma_f', 'lb', 0, 'ub', inf, 'lbs', 10, 'ubs', 100); % RBF variance
+                param(3) = struct('name', 'sigma_e', 'lb', 0, 'ub', inf, 'lbs', 10, 'ubs', 100); % noise in the generative model
 %                 param(4) = struct('name', 'sigma', 'lb', 5, 'ub', 10); % response noise
                 f = @(x) likfun_GP(x, data(subject));
                 
@@ -55,7 +55,11 @@ for subject = 1:length(data)
         %set fminunc starting values
         x0 = zeros(1, length(param)); % initialize at zero
         for p = 1:length(param)
-            x0(p) = unifrnd(param(p).lb, param(p).ub); %pick random starting values
+            if strcmp(model, 'gp_pertrial')
+                x0(p) = unifrnd(param(p).lbs, param(p).ubs); %pick random starting values
+            else
+                x0(p) = unifrnd(param(p).lb, param(p).ub); %pick random starting values
+            end
         end
         
         % find min negative log likelihood = maximum likelihood for each subject
