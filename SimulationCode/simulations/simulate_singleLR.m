@@ -17,7 +17,7 @@ gX = @() (rand(D,1))*100;
 nZ = @() 0 * randn(1);
 
 %number of subjects
-num_subs = 10000;
+num_subs = 1000;
 
 
 %% simulate ===============================================================
@@ -39,7 +39,7 @@ for subject = 1:num_subs
     % sample X for this trial
     X = gX();
     sub(subject).bars(trial, :) = X;
-    correct_response = betaWeights' * X + nZ();
+    correct_response = betaWeights * X + nZ();
     sub(subject).correct_response(trial) = correct_response; 
     
      % compute prediction
@@ -67,6 +67,6 @@ end
 
 
 %% save data
-save('../../../SimulationData/simulated_1LR', 'sub')
+save('../../../simulated_1LR', 'sub')
 
 end
