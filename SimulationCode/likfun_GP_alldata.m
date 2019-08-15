@@ -17,7 +17,8 @@ X = X - repmat(mean(X,2),1,size(X,2));
 % log marginal likelihood
 Ky = K(X,X,lambda,sigma2_f) + sigma2_e*eye(num_trials); %plus standard epsilon noise
 
-negLL = -(-1/2 * y'*inv(Ky)*y - 1/2 * logdet(Ky) - num_trials/2*log(2*pi));
+logDetKy = 2*sum(log(diag(chol(Ky)))); %this avoids overflow to infinity when taking det
+negLL = -(-1/2 * y'*inv(Ky)*y - 1/2 * logDetKy - num_trials/2*log(2*pi));
 
 end
 
