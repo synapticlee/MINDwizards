@@ -1,5 +1,5 @@
 function negLL = likfun_GP_alldata(params, data)
-
+addpath('../matlabhelpers/') %needs logdet (and jitChol) functions
 % Parameters
 num_trials  = data.nTrials;
 lambda      = params(1); %
@@ -17,7 +17,7 @@ X = X - repmat(mean(X,2),1,size(X,2));
 % log marginal likelihood
 Ky = K(X,X,lambda,sigma2_f) + sigma2_e*eye(num_trials); %plus standard epsilon noise
 
-negLL = -(-1/2 * y'*inv(Ky)*y - 1/2 * log(det(Ky)) - num_trials/2*log(2*pi));
+negLL = -(-1/2 * y'*inv(Ky)*y - 1/2 * logdet(Ky) - num_trials/2*log(2*pi));
 
 end
 
