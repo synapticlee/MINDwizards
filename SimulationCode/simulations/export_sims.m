@@ -4,6 +4,7 @@ function export_sims(mat_filename, output_name)
 
 load(mat_filename);
 
+csv_data = zeros(500*1000,11);
 
 for subject = 1:length(sub)
     disp(subject);
@@ -13,10 +14,11 @@ for subject = 1:length(sub)
         csv_data(start_row + trial, 1) = subject;
         csv_data(start_row + trial, 2) = trial;
         csv_data(start_row + trial, 3) = sub_data.response(trial);
-        csv_data(start_row + trial, 4:8) = sub_data.bars(trial);
+        csv_data(start_row + trial, 4:8) = sub_data.bars(trial, :);
         csv_data(start_row + trial, 9) = sub_data.correct_response(trial);
         csv_data(start_row + trial, 10) = sub_data.alpha;
         csv_data(start_row + trial, 11) = sub_data.sigma; 
+        %csv_data(start_row + trial, 12) = sub_data.invTemp; 
     end
 
 
