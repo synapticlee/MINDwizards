@@ -71,10 +71,13 @@ for subject = 1:length(data)
             results(subject, starts).sub = subject;
             results(subject, starts).model = model;
             results(subject, starts).num_params = length(param);
+            results(subject, starts).nTrials = data(subject).nTrials;
+            results(subject, starts).AIC = 2*nloglik +2*length(param);
+            results(subject, starts).BIC = 2*nloglik+length(param)*log(data(subject).nTrials);
             save(results_filename, 'results')
     end
 end
-    
+   
     
         
 
