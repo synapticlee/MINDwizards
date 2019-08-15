@@ -41,6 +41,7 @@ for subject = 1:num_subs
     sigma = unifrnd(5, 10);
     sub(subject).mem_decay = mem_decay;
     sub(subject).similarity_weight = similarity_weight;
+    sub(subject).sigma = sigma;
     sub(subject).nTrials = T;
     for trial = 1:T
      

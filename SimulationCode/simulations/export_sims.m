@@ -16,9 +16,9 @@ for subject = 1:length(sub)
         csv_data(start_row + trial, 3) = sub_data.response(trial);
         csv_data(start_row + trial, 4:8) = sub_data.bars(trial, :);
         csv_data(start_row + trial, 9) = sub_data.correct_response(trial);
-        csv_data(start_row + trial, 10) = sub_data.trial_mem;
-        csv_data(start_row + trial, 11) = sub_data.sigma; 
-        %csv_data(start_row + trial, 12) = sub_data.invTemp; 
+        csv_data(start_row + trial, 10) = sub_data.mem_decay;
+        csv_data(start_row + trial, 12) = sub_data.sigma; 
+        csv_data(start_row + trial, 11) = sub_data.similarity_weight; 
     end
 
 
