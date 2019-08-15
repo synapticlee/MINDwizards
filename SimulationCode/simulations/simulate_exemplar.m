@@ -45,11 +45,14 @@ for subject = 1:num_subs
         if trial > 1 && trial < trial_mem
             dist = sqrt(sum((x_store - X).^2));
             Rhat = correct_response_store(dist == min(dist));
+            reference_trial = find(Rhat == correct_response_store);
         elseif trial > trial_mem
             dist = sqrt(sum((x_store - X).^2));
             Rhat = correct_response_store(dist == min(dist(trial-trial_mem:trial-1))); 
+            reference_trial = find(Rhat == correct_response_store);
         else
             Rhat = 50 + 10*randn(1);
+            reference_trial = 0;
         end
     
         %store Rhats
@@ -62,7 +65,8 @@ for subject = 1:num_subs
         %add correct response to store
         correct_response = sum(betaWeights' .* X) + nZ();
         correct_response_store(trial) = correct_response;
-        sub(subject).correct_response(trial) = correct_response; 
+        sub(subject).correct_response(trial) = correct_response;
+        sub(subject).reference_trial(trial) = reference_trial;
         
         % compute response
         response = Rhat + sigma * randn(1);
@@ -78,12 +82,13 @@ for subject = 1:num_subs
         error = response - correct_response;
         error_store(trial) = error;
         sub(subject).error(trial) = error; 
+        
     
     end
 end
 
 %% save data
-save('../../../simulated_exemplar_highTrialMem', 'sub')
+save('../../../simulated_exemplar_highTrialMem_withRefTrials', 'sub')
 
  %% Plot errors over time
 % figure(1); clf;  hold on;
