@@ -31,9 +31,9 @@ for subject = 1:length(data)
                 param(3) = struct('name','invTemp','lb',0,'ub',100);
                 f = @(x) likfun_attention_weight(x, data(subject));
                 case 'gp'
-                param(1) = struct('name','lr','lb',1,'ub',100); % length scale
-                param(2) = struct('name', 'sigma', 'lb', 1, 'ub', 15); % RBF variance
-                param(3) = struct('name', 'sigma', 'lb', 0, 'ub', 1e-3); % response noise
+                param(1) = struct('name','lr','lb',25,'ub',50); % length scale
+                param(2) = struct('name', 'sigma', 'lb', 10, 'ub', 20); % RBF variance
+                param(3) = struct('name', 'sigma', 'lb', 0.4, 'ub', 1.2); % response noise
                 f = @(x) likfun_GP_alldata(x, data(subject));
                 
                 case 'exemplar_probabilistic'
@@ -44,14 +44,15 @@ for subject = 1:length(data)
                 
             end
             
-         %set fminunc starting values
-         x0 = zeros(1, length(param)); % initialize at zero
-            for p = 1:length(param)
-                x0(p) = unifrnd(param(p).lb, param(p).ub); %pick random starting values
-            end
-            
+        %set fminunc starting values
+        x0 = zeros(1, length(param)); % initialize at zero
+        for p = 1:length(param)
+            x0(p) = unifrnd(param(p).lb, param(p).ub); %pick random starting values
+        end
+        
         % find min negative log likelihood = maximum likelihood for each subject
         [x, nloglik] = fmincon(f, x0, [], [], [], [], [param.lb], [param.ub]);
+
             
         % store min negative log likelihood and associated parameter values
             %if starts == 1 || nloglik < results(subject).nll
