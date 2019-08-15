@@ -1,9 +1,10 @@
-function [ nloglik ] = attention( params, data )
+function [ nloglik ] = likfun_attention( params, data )
 
 % Parameters
 num_trials = data.nTrials;
 alpha = params(1);
 sigma = params(2);
+invTemp = params(3);
 numDim = 5;
 
 
@@ -25,9 +26,13 @@ for trial = 1:num_trials
     %compare prediction based on parameters to actual response
     choice_prob = 1/(sigma*sqrt(2*pi))* exp(-.5*((response - Rhat)/sigma)^2); 
 
+   
+    %softmax - attention prime 
+    attention_weight = exp(invTemp*theta)/sum(exp(invTemp*theta));
+     
     %update values for next trial
     delta = correct_response - response;
-    theta = theta + alpha * delta * X;
+    theta = theta + alpha * delta * attention_weight .* X;
     
     %store values and choice probabilities
     theta_estimates(trial, :) = theta;

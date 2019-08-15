@@ -27,7 +27,7 @@ for subject = 1:length(data)
           
                 case 'attention'
                 param(1) = struct('name','lr','lb',0,'ub',1e-6);
-                param(2) = struct('name', 'sigma', 'lb', 5, 'ub', 10);
+                param(2) = struct('name', 'sigma', 'lb', 5, 'ub', 100);
                 param(3) = struct('name','invTemp','lb',.5,'ub',10);
                 f = @(x) likfun_attention(x, data(subject));
                 case 'gp'
