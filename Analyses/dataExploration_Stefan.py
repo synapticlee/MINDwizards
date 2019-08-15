@@ -429,7 +429,7 @@ data_for_plotting.shape
 
 
 # %%
-def plot_average_data(data, beta_weights):
+def plot_average_data(data, beta_weights, filename=None):
     """Plots the data for the estimated weights 
     across all trials, along with dashed lines for the 
     constants defined in beta_weights."""
@@ -465,11 +465,15 @@ def plot_average_data(data, beta_weights):
 
     # Remove top and right borders
     sns.despine()
+    
+    # save
+    if filename is not None:
+        plt.savefig(filename)
 
 
 learner_data = data_for_plotting[data_for_plotting["learner"] == 1]
-plot_average_data(learner_data, beta_weights)
+plot_average_data(learner_data, beta_weights, filename="learner.svg")
 
 # %%
 non_learner_data = data_for_plotting[data_for_plotting["learner"] == 0]
-plot_average_data(non_learner_data, beta_weights)
+plot_average_data(non_learner_data, beta_weights, filename="non-learner.svg")
