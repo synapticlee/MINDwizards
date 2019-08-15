@@ -1,4 +1,4 @@
-function log_marginal_likelihood = likfun_GP_alldata(params, data)
+function negLL = likfun_GP_alldata(params, data)
 
 % Parameters
 num_trials  = data.nTrials;
@@ -17,7 +17,7 @@ X = X - repmat(mean(X,2),1,size(X,2));
 % log marginal likelihood
 Ky = K(X,X,lambda,sigma2_f) + sigma2_e*eye(num_trials); %plus standard epsilon noise
 
-log_marginal_likelihood = -1/2 * y'*inv(Ky)*y - 1/2 * log(det(Ky)) - num_trials/2*log(2*pi);
+negLL = -(-1/2 * y'*inv(Ky)*y - 1/2 * log(det(Ky)) - num_trials/2*log(2*pi));
 
 end
 
