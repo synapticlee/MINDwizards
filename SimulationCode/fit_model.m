@@ -69,15 +69,15 @@ for subject = 1:length(data)
         % store min negative log likelihood and associated parameter values
             %if starts == 1 || nloglik < results(subject).nll
               %  num_unchanged = 0; %reset to 0 if likelihood changes
-                results(subject, starts).nll = nloglik;
-                results(subject, starts).x = x;
+                results(subject, start).nll = nloglik;
+                results(subject, start).x = x;
             %end
-            results(subject, starts).sub = subject;
-            results(subject, starts).model = model;
-            results(subject, starts).num_params = length(param);
-            results(subject, starts).nTrials = data(subject).nTrials;
-            results(subject, starts).AIC = 2*nloglik +2*length(param);
-            results(subject, starts).BIC = 2*nloglik+length(param)*log(data(subject).nTrials);
+            results(subject, start).sub = subject;
+            results(subject, start).model = model;
+            results(subject, start).num_params = length(param);
+            results(subject, start).nTrials = data(subject).nTrials;
+            results(subject, start).AIC = 2*nloglik +2*length(param);
+            results(subject, start).BIC = 2*nloglik+length(param)*log(data(subject).nTrials);
             save(results_filename, 'results')
     end
 end
