@@ -1,6 +1,6 @@
 function obj = simulate_bothalf_bar()
     %sim bottom half
-    n=100;
+    n=10;
     t=300;
     halfrand= @() 50* rand(t,5);
     w=rand(5,1);
@@ -11,6 +11,9 @@ function obj = simulate_bothalf_bar()
              sub(i).weights(j,:) = weights();
             end
         sub(i).correct_response= sum((sub(i).bars(:,:).*sub(i).weights(:,:))')';
+        sub(i).nTrials=t;
+        sub(i).response=sub(i).correct_response;
     end
+
     obj=sub;
 end

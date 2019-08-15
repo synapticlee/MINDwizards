@@ -42,6 +42,13 @@ for subject = 1:length(data)
                 param(3) = struct('name','sigma','lb', 5,'ub', 10);
                 f = @(x) likfun_exemplar_probabilistic(x, data(subject));
                 
+                case 'gp_pertrial'
+                param(1) = struct('name','lr','lb',25,'ub',50); % length scale
+                param(2) = struct('name', 'sigma', 'lb', 10, 'ub', 20); % RBF variance
+                param(3) = struct('name', 'sigma', 'lb', 0.4, 'ub', 1.2); % noise in the generative model
+                param(4) = struct('name', 'sigma', 'lb', 5, 'ub', 10); % response noise
+                f = @(x) likfun_GP(x, data(subject));
+                
             end
             
         %set fminunc starting values
