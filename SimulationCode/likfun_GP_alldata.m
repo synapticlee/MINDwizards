@@ -1,5 +1,5 @@
 function negLL = likfun_GP_alldata(params, data)
-addpath('../matlabhelpers/') %needs logdet (and jitChol) functions
+
 % Parameters
 num_trials  = data.nTrials;
 lambda      = params(1); %
@@ -26,8 +26,8 @@ function K = K(X, Y, lambda, sigma2_f)
 % X are a matrix with columns as the bar heights for one trial
 
 %XX + YY - 2XY (inner product of matrices row by column)
-sqrDist = (diag(X'*X)*ones(1, size(X,2))) + ...
-          (diag(Y'*Y)*ones(1, size(Y,2)))' - ...
+sqrDist = (diag(X'*X)*ones(1, size(Y,2))) + ...
+          (diag(Y'*Y)*ones(1, size(X,2)))' - ...
           2*X'*Y;
 
 K = sigma2_f*exp(-sqrDist/(2*lambda^2));
