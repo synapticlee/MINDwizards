@@ -31,7 +31,7 @@ theta = rand(D,1);
 T = 500;
 
 for subject = 1:num_subs
-    trial_mem = round(unifrnd(1, 25)); % number of trials back people can remember
+    trial_mem = round(unifrnd(1, 499)); % number of trials back people can remember
     sigma = unifrnd(2, 10);
     sub(subject).trial_mem = trial_mem;
     sub(subject).sigma = sigma;
@@ -83,7 +83,7 @@ for subject = 1:num_subs
 end
 
 %% save data
-save('../../../simulated_exemplar', 'sub')
+save('../../../simulated_exemplar_highTrialMem', 'sub')
 
  %% Plot errors over time
 % figure(1); clf;  hold on;
