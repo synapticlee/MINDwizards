@@ -69,15 +69,13 @@ for subject = 1:length(data)
                 results(subject, starts).x = x;
             %end
             results(subject, starts).sub = subject;
+            results(subject, starts).model = model;
+            results(subject, starts).num_params = length(param);
             save(results_filename, 'results')
     end
 end
     
     
         
-%% Run fmincon
-results(subject, starts).model = model;
-results(subject, starts).num_params = length(param);
-save(results_filename, 'results')
-    
+
 end
