@@ -433,18 +433,24 @@ def plot_average_data(data, beta_weights, filename=None):
     """Plots the data for the estimated weights 
     across all trials, along with dashed lines for the 
     constants defined in beta_weights."""
-    legend_labels = [str(beta) for beta in beta_weights]
-    legend_labels.append("constant")
-    sns.set_style("ticks")
+    sns.set(style="ticks", rc={"lines.linewidth": 2.5})
     plt.figure(figsize=(10, 6))
     ax = sns.lineplot(x="trial", y="weight", hue="weight_num", data=data)
     # Draw constant horizontal lines
     for i, beta in enumerate(beta_weights):
         ax.axhline(y=beta, linestyle="--", color="C" + str(i))
 
+    # Legend
+    legend_labels = [str(beta) for beta in beta_weights]
+    legend_labels.append("constant")
+
     # move legend outside of plot
     leg = plt.legend(
-        bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.0, labels=legend_labels
+        bbox_to_anchor=(1.05, 1),
+        loc=2,
+        borderaxespad=0.0,
+        fontsize=12,
+        labels=legend_labels,
     )
 
     # change legend frame color
@@ -457,7 +463,7 @@ def plot_average_data(data, beta_weights, filename=None):
     # Set axis limits
     ax.set_ylim([-0.2, 0.8])
     ax.set_xlim([0, data["trial"].max()])
-    
+
     # Change ticks
     x_tick_step = 50
     plt.xticks(np.arange(0, data["trial"].max() + x_tick_step, x_tick_step))
@@ -465,8 +471,8 @@ def plot_average_data(data, beta_weights, filename=None):
 
     # Remove top and right borders
     sns.despine()
-    
-    # save
+
+    # Save figure
     if filename is not None:
         plt.savefig(filename)
 
