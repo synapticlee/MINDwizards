@@ -25,11 +25,11 @@ for subject = 1:length(data)
                 param(2) = struct('name', 'sigma', 'lb', 5, 'ub', 10);
                 f = @(x) likfun_single_LR(x, data(subject));
           
-                case 'attention_weight'
-                param(1) = struct('name','lr','lb',0,'ub',1);
-                param(2) = struct('name', 'sigma', 'lb', .0001, 'ub', 100);
-                param(3) = struct('name','invTemp','lb',0,'ub',100);
-                f = @(x) likfun_attention_weight(x, data(subject));
+                case 'attention'
+                param(1) = struct('name','lr','lb',0,'ub',1e-6);
+                param(2) = struct('name', 'sigma', 'lb', 5, 'ub', 10);
+                param(3) = struct('name','invTemp','lb',.5,'ub',10);
+                f = @(x) likfun_attention(x, data(subject));
                 case 'gp'
                 param(1) = struct('name','lr','lb',25,'ub',50); % length scale
                 param(2) = struct('name', 'sigma', 'lb', 10, 'ub', 20); % RBF variance
