@@ -3,8 +3,8 @@ function nloglik = likfun_GP(params, data)
 % Parameters
 num_trials  = data.nTrials;
 lambda      = params(1); %
-sigma2_f    = params(2); % scale 
-sigma2_e    = params(3); % probably fairly low
+sigma_f    = params(2); % scale 
+sigma_e    = params(3); % probably fairly low
 % sigma       = params(4); % noise in response function
 
 choice_probs = zeros(1,num_trials);
@@ -18,7 +18,7 @@ for trial = 1:num_trials
     % mean function
     if trial == 1
         m = 50;
-        sigma = sqrt(sigma2_e);
+        sigma = sigma_e;
         
     else
         
@@ -31,13 +31,13 @@ for trial = 1:num_trials
         X_old = X_old - repmat(mean(X_old,2),1,size(X_old,2));
         
         % mean function
-        m = K(X,X_old,lambda,sigma2_f) * inv(K(X_old,X_old,lambda,sigma2_f) + sigma2_e*eye(trial-1)) * y_old;
+        m = K(X,X_old,lambda,sigma_f) * inv(K(X_old,X_old,lambda,sigma_f) + sigma_e^2*eye(trial-1)) * y_old;
         
         % covariance matrix (actually variance, because response follows a univariate gaussian)
-        cov = K(X,X,lambda,sigma2_f) - ...
-            K(X,X_old,lambda,sigma2_f) * ...
-            inv(K(X_old,X_old,lambda,sigma2_f) + sigma2_e*eye(trial-1)) * ...
-            K(X_old,X,lambda,sigma2_f);
+        cov = K(X,X,lambda,sigma_f) - ...
+            K(X,X_old,lambda,sigma_f) * ...
+            inv(K(X_old,X_old,lambda,sigma_f) + sigma_e^2*eye(trial-1)) * ...
+            K(X_old,X,lambda,sigma_f);
         sigma = sqrt(cov);
     end
     
@@ -52,7 +52,7 @@ nloglik = -1*loglik;
 
 end
 
-function K = K(X, Y, lambda, sigma2_f)
+function K = K(X, Y, lambda, sigma_f)
 % X: NBars * 1
 % Y: NBars * (trial-1)
 
@@ -64,6 +64,6 @@ sqrDist = (sum(X'.^2,2)*ones(1, size(Y,2))) + ...
           (sum(Y'.^2,2)*ones(1, size(X,2)))' - ...
           2*X'*Y;
 
-K = sigma2_f*exp(-sqrDist/(2*lambda^2));
+K = sigma_f^2*exp(-sqrDist/(2*lambda^2));
 
 end
