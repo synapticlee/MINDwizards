@@ -18,7 +18,7 @@ for subject = 1:length(sub)
         csv_data(start_row + trial, 9) = sub_data.correct_response(trial);
         csv_data(start_row + trial, 10) = sub_data.alpha;
         csv_data(start_row + trial, 11) = sub_data.sigma; 
-        %csv_data(start_row + trial, 12) = sub_data.invTemp; 
+        csv_data(start_row + trial, 12) = sub_data.invTemp; 
     end
 
 
