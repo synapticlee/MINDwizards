@@ -5,10 +5,12 @@ num_trials  = data.nTrials;
 lambda      = params(1); %
 sigma2_f    = params(2); % scale 
 sigma2_e    = params(3); % probably fairly low
-sigma       = params(4); % noise in response function
+% sigma       = params(4); % noise in response function
 
 choice_probs = zeros(1,num_trials);
+
 for trial = 1:num_trials
+    
     % data and response for the current trial
     response = data.response(trial);
     X = data.bars(trial, :)';
@@ -16,6 +18,7 @@ for trial = 1:num_trials
     % mean function
     if trial == 1
         m = 50;
+        sigma = sqrt(sigma2_e);
         
     else
         
@@ -27,7 +30,15 @@ for trial = 1:num_trials
         % mean-center the data
         X_old = X_old - repmat(mean(X_old,2),1,size(X_old,2));
         
+        % mean function
         m = K(X,X_old,lambda,sigma2_f) * inv(K(X_old,X_old,lambda,sigma2_f) + sigma2_e*eye(trial-1)) * y_old;
+        
+        % covariance matrix (actually variance, because response follows a univariate gaussian)
+        cov = K(X,X,lambda,sigma2_f) - ...
+            K(X,X_old,lambda,sigma2_f) * ...
+            inv(K(X_old,X_old,lambda,sigma2_f) + sigma2_e*eye(trial-1)) * ...
+            K(X_old,X,lambda,sigma2_f);
+        sigma = sqrt(cov);
     end
     
     % compare prediction based on parameters to actual response
@@ -55,8 +66,4 @@ sqrDist = (sum(X'.^2,2)*ones(1, size(Y,2))) + ...
 
 K = sigma2_f*exp(-sqrDist/(2*lambda^2));
 
-end
-
-function k = RBFkernel(x,xprime,lambda,sigma_f)
-k = sigma_f^2*exp(-(x-xprime).^2/(2*lambda^2));
 end
