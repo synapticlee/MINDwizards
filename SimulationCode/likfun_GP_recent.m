@@ -41,6 +41,10 @@ for trial = 1:num_trials
             sigma_e^2*eye(trial-1)) * ...
             K(X_old,X,1:trial-1,trial,lambda,sigma_f,tau);
         sigma = sqrt(cov);
+
+        if trial==500
+            keyboard
+        end
     end
     
     % compare prediction based on parameters to actual response
@@ -57,7 +61,7 @@ nloglik = -1*loglik;
 
 end
 
-function newK = K(X, Y, tX, tY, lambda, sigma_f, tau)
+function [newK,T] = K(X, Y, tX, tY, lambda, sigma_f, tau)
 % X: NBars * n1
 % tX: length n1
 % Y: NBars * n2
@@ -71,10 +75,8 @@ K = sigma_f^2*exp(-sqrDist/(2*lambda^2));
 
 tX = tX(:);
 tY = tY(:)';
-T = exp(-(abs(repmat(tX,1,length(tY)) - repmat(tY,length(tY), 1)))/tau);
+T = exp(-(abs(repmat(tX,1,length(tY)) - repmat(tY,length(tX), 1)))/tau);
 
 newK = K.*T;
-
-keyboard
 
 end
