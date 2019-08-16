@@ -22,11 +22,11 @@ for trial = 1:num_trials
         
     else
         
-        for tr = 1:(trial-1)
-            X_old(tr) = data.bars(1:trial-1)*exp(expdecay*tr);
-        end
-        y_old = data.correct_response(1:trial-1)*exp(expdecay*tr);
+        % data and correct responses for all previous trials
+        y_old = data.correct_response(1:trial-1);
         y_old = y_old(:); % make y a column vector
+        % transpose it to make each trial a column of the matrix
+        X_old = data.bars(1:trial-1,:)'; 
         
         % mean function
         m = K(X,X_old,trial,1:trial-1,lambda,sigma_f,tau) * ...
@@ -74,5 +74,7 @@ tY = tY(:)';
 T = exp(-(abs(repmat(tX,1,length(tY)) - repmat(tY,length(tY), 1)))/tau);
 
 newK = K.*T;
+
+keyboard
 
 end
