@@ -27,8 +27,8 @@ for trial = 1:num_trials
         y_old = y_old(:); % make y a column vector
         X_old = data.bars(1:trial-1,:)'; % transpose it to make each trial a column of the matrix
         
-        % mean-center the data
-        X_old = X_old - repmat(mean(X_old,2),1,size(X_old,2));
+%         % mean-center the data
+%         X_old = X_old - repmat(mean(X_old,2),1,size(X_old,2));
         
         % mean function
         m = K(X,X_old,lambda,sigma_f) * inv(K(X_old,X_old,lambda,sigma_f) + sigma_e^2*eye(trial-1)) * y_old;
