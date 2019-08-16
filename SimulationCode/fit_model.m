@@ -50,12 +50,19 @@ for subject = 1:length(data)
 %                 param(4) = struct('name', 'sigma', 'lb', 5, 'ub', 10); % response noise
                 f = @(x) likfun_GP(x, data(subject));
                 
+                case 'gp_sigma'
+                param(1) = struct('name', 'lambda', 'lb', 0,'ub', inf, 'lbs', 25, 'ubs', 100); % length scale
+                param(2) = struct('name', 'sigma_f', 'lb', 0, 'ub', inf, 'lbs', 10, 'ubs', 100); % RBF variance
+                param(3) = struct('name', 'sigma_e', 'lb', 0, 'ub', inf, 'lbs', 0, 'ubs', 10); % noise in the generative model
+                param(4) = struct('name', 'sigma', 'lb', 0, 'ub', inf, 'lbs', 10, 'ubs', 100); % response noise
+                f = @(x) likfun_GP_sigma(x, data(subject));
+                
             end
             
         %set fminunc starting values
         x0 = zeros(1, length(param)); % initialize at zero
         for p = 1:length(param)
-            if strcmp(model, 'gp_pertrial')
+            if contains(model, 'gp')
                 x0(p) = unifrnd(param(p).lbs, param(p).ubs); 
             else
                 x0(p) = unifrnd(param(p).lb, param(p).ub); 
