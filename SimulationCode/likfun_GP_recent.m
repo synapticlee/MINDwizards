@@ -32,15 +32,15 @@ for trial = 1:num_trials
         X_old = X_old - repmat(mean(X_old,2),1,size(X_old,2));
         
         % mean function
-        m = K(X,X_old,lambda,sigma_f) * inv(K(X_old,X_old,lambda,sigma_f) + ...
+        m = K(X,X_old,trial,1:trial-1,lambda,sigma_f,tau) * inv(K(X_old,X_old,1:trial-1,1:trial-1,lambda,sigma_f,tau) + ...
                 sigma_e^2*eye(trial-1)) * y_old;
         
         % covariance matrix 
         %(actually variance, because response follows a univariate gaussian)
-        cov = K(X,X,lambda,sigma_f) - ...
-            K(X,X_old,lambda,sigma_f) * ...
-            inv(K(X_old,X_old,lambda,sigma_f) + sigma_e^2*eye(trial-1)) * ...
-            K(X_old,X,lambda,sigma_f);
+        cov = K(X,X,trial,trial,lambda,sigma_f,tau) - ...
+            K(X,X_old,trial,1:trial-1,lambda,sigma_f,tau) * ...
+            inv(K(X_old,X_old,1:trial-1,1:trial-1,lambda,sigma_f,tau) + sigma_e^2*eye(trial-1)) * ...
+            K(X_old,X,1:trial-1,trial,lambda,sigma_f,tau);
         sigma = sqrt(cov);
     end
     
@@ -59,17 +59,22 @@ nloglik = -1*loglik;
 
 end
 
-function K = K(X, Y, lambda, sigma_f, tau)
-% X: NBars * 1
-% Y: NBars * (trial-1)
+function newK = K(X, Y, tX, tY, lambda, sigma_f, tau)
+% X: NBars * n1
+% tX: length n1
+% Y: NBars * n2
+% tY: length n2
 
 %XX + YY - 2XY (inner product of matrices row by column)
-% sqrDist = sum(X.^2, 1)' * ones(1, size(Y,2)) + ...
-%           ones(size(X,2), 1) * sum(Y.^2, 1) - ...
-%           2*X'*Y;
 sqrDist = (sum(X'.^2,2)*ones(1, size(Y,2))) + ...
           (sum(Y'.^2,2)*ones(1, size(X,2)))' - ...
-          2*X'*Y;
+          2*X'*Y; % shape n1*n2
 K = sigma_f^2*exp(-sqrDist/(2*lambda^2));
+
+tX = tX(:);
+tY = tY(:)';
+T = exp(-(abs(repmat(tX,1,length(tY)) - repmat(tY,length(tY), 1)))/tau);
+
+newK = K.*T;
 
 end
