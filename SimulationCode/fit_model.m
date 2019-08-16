@@ -31,12 +31,6 @@ for subject = 1:length(data)
                 param(3) = struct('name','invTemp','lb',.5,'ub',10);
                 f = @(x) likfun_attention(x, data(subject));
                 
-                case 'gp'
-                param(1) = struct('name','lr','lb',25,'ub',50); % length scale
-                param(2) = struct('name', 'sigma', 'lb', 10, 'ub', 20); % RBF variance
-                param(3) = struct('name', 'sigma', 'lb', 0.4, 'ub', 1.2); % response noise
-                f = @(x) likfun_GP_alldata(x, data(subject));
-                
                 case 'exemplar_probabilistic'
                 param(1) = struct('name','mem_decay','lb',0,'ub',10);
                 param(2) = struct('name', 'similarity_weight', 'lb', 0, 'ub', 10);
@@ -49,6 +43,14 @@ for subject = 1:length(data)
                 param(3) = struct('name', 'sigma_e', 'lb', 0, 'ub', inf, 'lbs', 10, 'ubs', 100); % noise in the generative model
 %                 param(4) = struct('name', 'sigma', 'lb', 5, 'ub', 10); % response noise
                 f = @(x) likfun_GP(x, data(subject));
+
+                case 'gp_recent'
+                param(1) = struct('name', 'lambda', 'lb', 0,'ub', inf, 'lbs', 25, 'ubs', 100); % length scale
+                param(2) = struct('name', 'sigma_f', 'lb', 0, 'ub', inf, 'lbs', 10, 'ubs', 100); % RBF variance
+                param(3) = struct('name', 'sigma_e', 'lb', 0, 'ub', inf, 'lbs', 10, 'ubs', 100); % noise in the generative model
+                param(4) = struct('name', 'tau', 'lb', 0, 'ub', inf, 'lbs', 0, 'ubs', 500); % timescale of "memory" in past
+%                 param(4) = struct('name', 'sigma', 'lb', 5, 'ub', 10); % response noise
+                f = @(x) likfun_GP_recent(x, data(subject));
                 
             end
             
@@ -56,6 +58,8 @@ for subject = 1:length(data)
         x0 = zeros(1, length(param)); % initialize at zero
         for p = 1:length(param)
             if strcmp(model, 'gp_pertrial')
+                x0(p) = unifrnd(param(p).lbs, param(p).ubs); 
+            elseif strcmp(model, 'gp_recent')
                 x0(p) = unifrnd(param(p).lbs, param(p).ubs); 
             else
                 x0(p) = unifrnd(param(p).lb, param(p).ub); 
@@ -80,7 +84,6 @@ for subject = 1:length(data)
             results(subject, start).BIC = 2*nloglik+length(param)*log(data(subject).nTrials);
             save(results_filename, 'results')
     end
-    keyboard
 end
    
     
