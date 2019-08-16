@@ -478,11 +478,13 @@ def plot_average_data(data, beta_weights, filename=None):
 
 
 learner_data = data_for_plotting[data_for_plotting["learner"] == 1]
-plot_average_data(learner_data, beta_weights, filename="learner.svg")
+plot_average_data(learner_data, beta_weights, filename="learner.pdf")
 
 # %%
 non_learner_data = data_for_plotting[data_for_plotting["learner"] == 0]
-plot_average_data(non_learner_data, beta_weights, filename="non-learner.svg")
+plot_average_data(non_learner_data, beta_weights, filename="non-learner.pdf")
 
 # %%
-plot_average_data(data_for_plotting, beta_weights, filename="all_subjects.svg")
+plot_average_data(data_for_plotting, beta_weights, filename="all_subjects.pdf")
+
+# %%
