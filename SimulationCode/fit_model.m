@@ -58,6 +58,13 @@ for subject = 1:length(data)
                 param(3) = struct('name', 'sigma_e', 'lb', 0, 'ub', inf, 'lbs', 0, 'ubs', 10); % noise in the generative model
                 param(4) = struct('name', 'sigma', 'lb', 0, 'ub', inf, 'lbs', 10, 'ubs', 100); % response noise
                 f = @(x) likfun_GP_sigma(x, data(subject));
+                case 'gp_recent_sigma'
+                param(1) = struct('name', 'lambda', 'lb', 0,'ub', inf, 'lbs', 25, 'ubs', 100); % length scale
+                param(2) = struct('name', 'sigma_f', 'lb', 0, 'ub', inf, 'lbs', 10, 'ubs', 100); % RBF variance
+                param(3) = struct('name', 'sigma_e', 'lb', 0, 'ub', inf, 'lbs', 0, 'ubs', 10); % noise in the generative model
+                param(4) = struct('name', 'sigma', 'lb', 0, 'ub', inf, 'lbs', 0, 'ubs', 500); % tau
+                param(5) = struct('name', 'sigma', 'lb', 0, 'ub', inf, 'lbs', 10, 'ubs', 100); % response noise
+                f = @(x) likfun_GP_sigma(x, data(subject));
                 
             end
             
