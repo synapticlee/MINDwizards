@@ -1,11 +1,11 @@
-function nloglik = likfun_GP(params, data)
+function nloglik = likfun_GP_recent(params, data)
 
 % Parameters
 num_trials  = data.nTrials;
 lambda      = params(1); % length scale
 sigma_f     = params(2); % scale
 sigma_e     = params(3); % probably fairly low
-expdecay    = params(4); % decay in the past for the GP "memory"
+tau         = params(4); % decay in the past for the GP "memory"
 
 choice_probs = zeros(1,num_trials);
 
