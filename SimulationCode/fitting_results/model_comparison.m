@@ -17,7 +17,7 @@ GP = results;
 load('GPrecentsigma_fits');
 GP2 = results;
 
-load('lm_fits');
+load('lm_results');
 lm = results;
 
 load('serial_hypothesis_constant_results.mat');
@@ -67,25 +67,25 @@ BIC_subtraction = BIC - BIC(:, 3);
 figure;
 subplot(2,2,1)
 boxplot(AIC_subtraction);
-xticklabels({'RL','Attention','Exemplar','GP','GP w/ recency','lm'})
+xticklabels({'RL','Attention','Exemplar','GP','GP w/ recency','lm', 'serial', 'serial2'})
 xtickangle(50);
 title("AIC relative to best model")
 
 subplot(2,2,2)
 boxplot(BIC_subtraction);
-xticklabels({'RL','Attention','Exemplar','GP','GP w/ recency', 'lm'})
+xticklabels({'RL','Attention','Exemplar','GP','GP w/ recency','lm', 'serial', 'serial2'})
 xtickangle(50);
 title("BIC relative to best model")
 
 subplot(2,2,3);
-hist(best_model_AIC);
-xticklabels({'RL','Attention','Exemplar','GP','GP w/ recency', 'lm'})
+histogram(best_model_AIC, 'BinEdges', [0:9]);
+xticklabels({'RL','Attention','Exemplar','GP','GP w/ recency','lm', 'serial', 'serial2'})
 xtickangle(50);
 title("Distribution of minimum AICs")
 
 subplot(2,2,4);
-hist(best_model_BIC);
-xticklabels({'RL','Attention','Exemplar','GP','GP w/ recency', 'lm'})
+histogram(best_model_BIC, 1:9);
+xticklabels({'RL','Attention','Exemplar','GP','GP w/ recency','lm', 'serial', 'serial2'})
 xtickangle(50);
 title("Distribution of minimum BICs")
 
