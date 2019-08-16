@@ -56,9 +56,9 @@ for subject = 1:length(data)
         x0 = zeros(1, length(param)); % initialize at zero
         for p = 1:length(param)
             if strcmp(model, 'gp_pertrial')
-                x0(p) = unifrnd(param(p).lbs, param(p).ubs); %pick random starting values
+                x0(p) = unifrnd(param(p).lbs, param(p).ubs); 
             else
-                x0(p) = unifrnd(param(p).lb, param(p).ub); %pick random starting values
+                x0(p) = unifrnd(param(p).lb, param(p).ub); 
             end
         end
         
@@ -80,6 +80,7 @@ for subject = 1:length(data)
             results(subject, start).BIC = 2*nloglik+length(param)*log(data(subject).nTrials);
             save(results_filename, 'results')
     end
+    keyboard
 end
    
     
