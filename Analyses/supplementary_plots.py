@@ -102,5 +102,5 @@ for metric, vals in metric_dict.items():
         color="white",
         edgecolor="gray",
     )
+    plt.savefig(f"{metric}_beeswarm_violin.svg")
     plt.show()
-    plt.savefig(f"{metric}_beeswarm_violin.pdf")
