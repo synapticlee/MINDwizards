@@ -25,14 +25,14 @@ T = 500;
 for subject = 1:num_subs
     
     % model parameters
-    lambda     = unifrnd(10, 100); %
-    sigma_f    = unifrnd(0, 100); % scale
-    sigma_e    = unifrnd(0, 100); % probably fairly low
+    lambda     = 500; %unifrnd(10, 100); %
+    sigma_f    = 80; %unifrnd(0, 100); % scale
+    sigma_e    = 150; %unifrnd(0, 100); % probably fairly low
 %     sigma       = unifrnd(5, 10); % noise in response function
     
     sub(subject).lambda = lambda;
-    sub(subject).sigma2_f = sigma_f;
-    sub(subject).sigma2_e = sigma_e;
+    sub(subject).sigma_f = sigma_f;
+    sub(subject).sigma_e = sigma_e;
 %     sub(subject).sigma = sigma;
     sub(subject).nTrials = T;
     
@@ -71,6 +71,13 @@ for subject = 1:num_subs
             
             response = m + sqrt(cov) * randn();
             
+        end
+        
+        if response > 100
+            response = 100;
+        end
+        if response < 10
+            response = 0;
         end
         
         sub(subject).response(trial) = response;
