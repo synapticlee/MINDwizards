@@ -62,7 +62,7 @@ for subject = 1:num_subs
             %compute prediction weights
             %recency_weight = recency_weight./sum(recency_weight);
             %dist_weighted = dist_weighted ./sum(dist_weighted);
-            pred_weights = (dist_weighted .* recency_weight);
+            pred_weights = (dist_weighted * recency_weight);
             pred_weights = pred_weights ./(sum(pred_weights));
             
             %compute weighted predictions
