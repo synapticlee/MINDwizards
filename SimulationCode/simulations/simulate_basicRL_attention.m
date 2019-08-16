@@ -23,7 +23,7 @@ nZ = @() 0 * randn(1);
 
 %% simulate ===============================================================
 % initialize learning algorithm
-theta = .25* ones(D,1);
+theta = .2* ones(D,1);
 
 T = 1000;
 alpha = 0.1;

@@ -36,7 +36,7 @@ theta = rand(D,1);
 T = 500;
 
 for subject = 1:num_subs
-    mem_decay = unifrnd(0, 10);
+    mem_decay = unifrnd(0, .5);
     similarity_weight = unifrnd(0, 10);
     sigma = unifrnd(5, 10);
     sub(subject).mem_decay = mem_decay;
@@ -60,6 +60,8 @@ for subject = 1:num_subs
             recency_weight = [1:trial-1].^mem_decay;
             
             %compute prediction weights
+            %recency_weight = recency_weight./sum(recency_weight);
+            %dist_weighted = dist_weighted ./sum(dist_weighted);
             pred_weights = (dist_weighted .* recency_weight);
             pred_weights = pred_weights ./(sum(pred_weights));
             
@@ -101,5 +103,5 @@ for subject = 1:num_subs
 end
 
 %% save data
-save('../../../simulated_exemplar_probabalistic', 'sub')
+save('../../../simulated_exemplar_probabalistic_new', 'sub')
 
