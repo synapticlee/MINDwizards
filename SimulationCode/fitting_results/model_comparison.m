@@ -81,11 +81,13 @@ subplot(2,2,3);
 histogram(best_model_AIC, 'BinEdges', [0:9]);
 xticklabels({'RL','Attention','Exemplar','GP','GP w/ recency','lm', 'serial', 'serial2'})
 xtickangle(50);
+xticks([1.5:1:8.5])
 title("Distribution of minimum AICs")
 
 subplot(2,2,4);
 histogram(best_model_BIC, 1:9);
 xticklabels({'RL','Attention','Exemplar','GP','GP w/ recency','lm', 'serial', 'serial2'})
+xticks([1.5:1:8.5])
 xtickangle(50);
 title("Distribution of minimum BICs")
 
