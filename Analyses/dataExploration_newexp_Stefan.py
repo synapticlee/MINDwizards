@@ -121,11 +121,16 @@ def get_sum_square_errors(a, b):
     return np.sum((a - b)**2)
 
 def get_beta_weights(data):
-    return [data.loc[0,'weights'+str(bar + 1)] for bar in range(5)]
+    return np.array([data.loc[0,'weights'+str(bar + 1)] for bar in range(5)])
+
+def get_sorted_beta_weights(beta_weights):
+    beta_weight_sort_order = np.argsort(beta_weights)
+    return beta_weight_sort_order, beta_weights[beta_weight_sort_order]
 
 def get_sorted_subject_coefficients(subject_coefficients, subject_data):
+#     set_trace()
     beta_weights = get_beta_weights(subject_data)
-    beta_weight_sort_order = np.argsort(beta_weights)
+    beta_weight_sort_order, sorted_beta_weights = get_sorted_beta_weights(beta_weights)
     return subject_coefficients[:, beta_weight_sort_order]
 
 def get_subject_data(subject, data):
@@ -133,19 +138,23 @@ def get_subject_data(subject, data):
 
 # test_window = 50 # last trials on which to judge degree of learning
 num_subjects = coef.shape[0]
-sum_square_errors = np.zeros(num_subjects) # the errors in learning on last trials
-avg_sum_square_errors = np.zeros(num_subjects)
+sum_square_errors = np.zeros((num_subjects, 5)) # the errors in learning for each beta weight
+avg_sum_square_errors = np.zeros((num_subjects, 5))
+all_betas = np.zeros((num_subjects, 5))
 for subject in range(num_subjects): 
     subject_data = get_subject_data(subject, data)
     subject_coefficients = extract_subject_coefficients(coef, subject)
     beta_weights = get_beta_weights(subject_data)
+    all_betas[subject, :] = beta_weights
     num_trials = subject_coefficients.shape[0]
     all_trials_coefficients = subject_coefficients[:, :-1] # remove constant
-    sum_square_errors[subject] = get_sum_square_errors(all_trials_coefficients, beta_weights)
-    avg_sum_square_errors[subject] = sum_square_errors[subject] / num_trials
-    
-learner_threshold = np.median(avg_sum_square_errors)
-learner_indices = np.where(avg_sum_square_errors < learner_threshold)[0]
+    for bar in range(len(beta_weights)):
+        sum_square_errors[subject, bar] = get_sum_square_errors(all_trials_coefficients[:, bar], beta_weights[bar])
+        avg_sum_square_errors[subject, bar] = sum_square_errors[subject, bar] / num_trials
+
+avg_collapsed_sum_square_errors = np.mean(avg_sum_square_errors, axis=1)
+learner_threshold = np.median(avg_collapsed_sum_square_errors)
+learner_indices = np.where(avg_collapsed_sum_square_errors< learner_threshold)[0]
 print(learner_indices)
 
 
@@ -160,24 +169,35 @@ def plot_subject_coefficients(coefficients, beta_weights):
             label="bar" + str(bar + 1) + ("*" if beta_weights[bar] > 0 else ""),
         )
         axes.axhline(y=beta_weights[bar], linestyle="--", color="C" + str(bar))
-    axes.set_ylim([0, 1])
+    axes.set_ylim([-0.2, 1])
     plt.legend()
 
 
 # Plot subject coefficients in ascending order of error
-subject_sort_order = np.argsort(avg_sum_square_errors)
+subject_sort_order = np.argsort(avg_collapsed_sum_square_errors)
+all_sorted_subject_coefficients = {}
 for subject in subject_sort_order:
     subject_data = get_subject_data(subject, data)
     subject_coefficients = extract_subject_coefficients(coef, subject)
-    beta_weights = get_beta_weights(subject_data)    
+    beta_weights = all_betas[subject, :]
+    beta_weight_sort_order, sorted_beta_weights = get_sorted_beta_weights(beta_weights)
     sorted_subject_coefficients = get_sorted_subject_coefficients(subject_coefficients, subject_data)
-#     set_trace()
-    # Resort based on the weight levels
+    # Resort based on the error levels
+    sorted_avg_sum_square_errors = avg_sum_square_errors[:, beta_weight_sort_order]
+    non_zero_avg_sum_square_errors = sorted_avg_sum_square_errors[subject, 2:]
+    error_sort_order = np.argsort(non_zero_avg_sum_square_errors)
     zero_bar_coefficients = sorted_subject_coefficients[:, :2]
-    non_zero_bar_coefficients = np.sort(sorted_subject_coefficients[:, 2:])
+    non_zero_bar_coefficients = sorted_subject_coefficients[:, 2:]
+    non_zero_bar_coefficients = non_zero_bar_coefficients[:, error_sort_order]
     sorted_subject_coefficients = np.concatenate((zero_bar_coefficients, non_zero_bar_coefficients), axis=1)
-    plot_subject_coefficients(sorted_subject_coefficients, sorted_weights)
+#     set_trace()
+    print(f"subject: {subject}, error_sort_order: {error_sort_order}")
+    all_sorted_subject_coefficients[subject] = sorted_subject_coefficients
+    plot_subject_coefficients(sorted_subject_coefficients, sorted_beta_weights)
 
+
+# %%
+# np.sum((non_zero_bar_coefficients[:, 0] - 0.3333)**2)
 
 # %% [markdown]
 # # Plot the average learner and non-learner curves up to the point where they all have trial data
@@ -194,7 +214,7 @@ def get_min_trials(coefficients):
     return min_trials
 
 
-def get_dataframe_of_coefficients(orig_data, coefficients, num_trials, learner_indices):
+def get_dataframe_of_coefficients(orig_data, all_sorted_subject_coefficients, num_trials, learner_indices):
     weight_dict = {key: f"weight_{key}" for key in range(6)}
     columns = [
         "subject_number",
@@ -207,15 +227,15 @@ def get_dataframe_of_coefficients(orig_data, coefficients, num_trials, learner_i
     index = []
     data = pd.DataFrame(index=index, columns=columns)
     data_template = data.copy()
-    num_subjects = coefficients.shape[0]
+    num_subjects = len(all_sorted_subject_coefficients.keys())
     frames = []
     for subject in range(num_subjects):
+        print(subject)
         subject_data = data_template.copy()
-        subject_coefficients = extract_subject_coefficients(coef, subject)
         orig_subject_data = get_subject_data(subject, orig_data)
-        sorted_subject_coefficients = get_sorted_subject_coefficients(subject_coefficients, orig_subject_data)
         beta_weights = get_beta_weights(orig_subject_data)
         sorted_beta_weights = np.sort(beta_weights)
+        sorted_subject_coefficients = all_sorted_subject_coefficients[subject]
         if subject in learner_indices:
             learner = True
         else:
@@ -236,7 +256,7 @@ def get_dataframe_of_coefficients(orig_data, coefficients, num_trials, learner_i
 
 min_trials = get_min_trials(coef)
 data_for_plotting = get_dataframe_of_coefficients(
-    data, coef, min_trials, learner_indices
+    data, all_sorted_subject_coefficients, min_trials, learner_indices
 )
 data_for_plotting.reset_index(drop=True, inplace=True)
 data_for_plotting.shape
@@ -259,7 +279,6 @@ def plot_average_data(data, beta_weights, filename=None):
 
     # Legend
     legend_labels = [str(beta) for beta in beta_weights]
-    legend_labels.append("constant")
 
     # move legend outside of plot
     leg = plt.legend(
@@ -282,7 +301,7 @@ def plot_average_data(data, beta_weights, filename=None):
     ax.set_xlim([0, data["trial"].max()])
 
     # Change ticks
-    x_tick_step = 50
+    x_tick_step = 20
     plt.xticks(np.arange(0, data["trial"].max() + x_tick_step, x_tick_step))
     ax.tick_params(labelsize=12)
 
@@ -301,5 +320,3 @@ plot_average_data(learner_data, sorted_beta_weights) # filename="learner.svg"
 # %%
 non_learner_data = data_for_plotting[data_for_plotting["learner"] == 0]
 plot_average_data(non_learner_data, beta_weights) #  filename="non-learner.svg"
-
-# %%
