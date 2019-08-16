@@ -165,7 +165,7 @@ def plot_subject_coefficients(coefficients, beta_weights):
     for bar in range(5):
         axes.plot(
             coefficients[:, bar],
-            color="C" + str(bar) if beta_weights[bar] > 0 else "black",
+            color="C" + str(bar) if beta_weights[bar] > 0 else "#A0A0A0",
             label="bar" + str(bar + 1) + ("*" if beta_weights[bar] > 0 else ""),
         )
         axes.axhline(y=beta_weights[bar], linestyle="--", color="C" + str(bar))
@@ -270,15 +270,21 @@ def plot_average_data(data, beta_weights, filename=None):
     """Plots the data for the estimated weights 
     across all trials, along with dashed lines for the 
     constants defined in beta_weights."""
+    
     sns.set(style="ticks", rc={"lines.linewidth": 2.5})
+    
+    # Custom color palette
+    custom_palette = ["#A0A0A0", "#A0A0A0", *sns.color_palette()]
+    sns.set_palette(custom_palette)
     plt.figure(figsize=(10, 6))
+    
     ax = sns.lineplot(x="trial", y="weight", hue="weight_num", data=data)
     # Draw constant horizontal lines
     for i, beta in enumerate(beta_weights):
         ax.axhline(y=beta, linestyle="--", color="C" + str(i))
 
     # Legend
-    legend_labels = [str(beta) for beta in beta_weights]
+    legend_labels = ["{:.2f}".format(beta) for beta in beta_weights]
 
     # move legend outside of plot
     leg = plt.legend(
@@ -315,8 +321,8 @@ def plot_average_data(data, beta_weights, filename=None):
 
 sorted_beta_weights = np.sort(beta_weights)
 learner_data = data_for_plotting[data_for_plotting["learner"] == 1]
-plot_average_data(learner_data, sorted_beta_weights) # filename="learner.svg"
+plot_average_data(learner_data, sorted_beta_weights, filename="new_task_learner.svg") # filename="learner.svg"
 
 # %%
 non_learner_data = data_for_plotting[data_for_plotting["learner"] == 0]
-plot_average_data(non_learner_data, beta_weights) #  filename="non-learner.svg"
+plot_average_data(non_learner_data, sorted_beta_weights, filename="new_task_non-learner.svg") #  filename="non-learner.svg"
