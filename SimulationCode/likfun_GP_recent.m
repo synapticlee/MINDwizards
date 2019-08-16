@@ -27,19 +27,18 @@ for trial = 1:num_trials
         end
         y_old = data.correct_response(1:trial-1)*exp(expdecay*tr);
         y_old = y_old(:); % make y a column vector
-
-        % mean-center the data
-        X_old = X_old - repmat(mean(X_old,2),1,size(X_old,2));
         
         % mean function
-        m = K(X,X_old,trial,1:trial-1,lambda,sigma_f,tau) * inv(K(X_old,X_old,1:trial-1,1:trial-1,lambda,sigma_f,tau) + ...
-                sigma_e^2*eye(trial-1)) * y_old;
+        m = K(X,X_old,trial,1:trial-1,lambda,sigma_f,tau) * ...
+            inv(K(X_old,X_old,1:trial-1,1:trial-1,lambda,sigma_f,tau) + ...
+            sigma_e^2*eye(trial-1)) * y_old;
         
         % covariance matrix 
         %(actually variance, because response follows a univariate gaussian)
         cov = K(X,X,trial,trial,lambda,sigma_f,tau) - ...
             K(X,X_old,trial,1:trial-1,lambda,sigma_f,tau) * ...
-            inv(K(X_old,X_old,1:trial-1,1:trial-1,lambda,sigma_f,tau) + sigma_e^2*eye(trial-1)) * ...
+            inv(K(X_old,X_old,1:trial-1,1:trial-1,lambda,sigma_f,tau) + ...
+            sigma_e^2*eye(trial-1)) * ...
             K(X_old,X,1:trial-1,trial,lambda,sigma_f,tau);
         sigma = sqrt(cov);
     end
@@ -51,7 +50,6 @@ for trial = 1:num_trials
     mean_est(trial) = m;
     var_est(trial)  = sigma.^2;
 end
-keyboard
 
 %compute negative log likelihood
 loglik = sum(log(choice_probs));
