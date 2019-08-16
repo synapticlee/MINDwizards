@@ -322,8 +322,11 @@ def plot_average_data(data, beta_weights, filename=None):
 
 sorted_beta_weights = np.sort(beta_weights)
 learner_data = data_for_plotting[data_for_plotting["learner"] == 1]
-plot_average_data(learner_data, sorted_beta_weights, filename="new_task_learner.svg") # filename="learner.svg"
+plot_average_data(learner_data, sorted_beta_weights, filename="new_task_learner.svg")
 
 # %%
 non_learner_data = data_for_plotting[data_for_plotting["learner"] == 0]
-plot_average_data(non_learner_data, sorted_beta_weights, filename="new_task_non-learner.svg") #  filename="non-learner.svg"
+plot_average_data(non_learner_data, sorted_beta_weights, filename="new_task_non-learner.svg")
+
+# %%
+plot_average_data(data_for_plotting, sorted_beta_weights, filename="new_task_all_subjects.svg")
