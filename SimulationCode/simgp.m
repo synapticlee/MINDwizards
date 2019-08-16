@@ -53,7 +53,11 @@ for subj = 1:41
         
         mean_est{subj}(trial) = m;
         var_est{subj}(trial)  = sigma.^2;
+
     end
+    writeNPY(mean_est{subj}, sprintf('mn_subj%d.npy', subj))
+    writeNPY(var_est{subj}, sprintf('var_subj%d.npy', subj))
+    disp('yay')
 end
 
 end
