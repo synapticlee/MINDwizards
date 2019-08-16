@@ -14,7 +14,7 @@ clear sub
 gX = @() (rand(D,1))*100;
 
 %number of subjects
-num_subs = 1;
+num_subs = 20;
 
 
 %% simulate ===============================================================
@@ -24,10 +24,12 @@ T = 500;
 
 for subject = 1:num_subs
     
+    subject
+    
     % model parameters
-    lambda     = 500; %unifrnd(10, 100); %
+    lambda     = 100; %unifrnd(10, 100); %
     sigma_f    = 80; %unifrnd(0, 100); % scale
-    sigma_e    = 150; %unifrnd(0, 100); % probably fairly low
+    sigma_e    = 10; %unifrnd(0, 100); % probably fairly low
 %     sigma       = unifrnd(5, 10); % noise in response function
     
     sub(subject).lambda = lambda;
@@ -87,7 +89,7 @@ end
 
 
 %% save data
-save('simulated_GP', 'sub')
+save(['simulated_GP' num2str(lambda) num2str(sigma_f) num2str(sigma_e)], 'sub')
 
 end
 

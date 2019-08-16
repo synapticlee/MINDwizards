@@ -31,6 +31,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from scipy.stats import linregress
 import scipy as sp
+import statsmodels.api as sm
 
 # %% [markdown]
 # ### load the data
@@ -92,5 +93,35 @@ fig, axes = plt.subplots(len(subList),1,figsize=(20,4*len(subList)),sharex=True,
 for iSub, sub in enumerate(subList):
     axes[iSub].plot(data.loc[data['sub']==iSub+1, 'absError'])
     axes[iSub].set(xlabel='trial',ylabel='absolute error')
+
+# %% [markdown]
+# #### try linear regression (with a constant term) with sliding windows
+
+# %%
+pMat3.shape
+
+# %%
+window = 20
+cols = ['bars'+str(i+1) for i in range(5)]
+pMat3 = np.empty((len(subList), data['NTrials'].max()-window, 3))
+pMat3[:] = np.nan
+
+fig, ax = plt.subplots(1,1,figsize=(8,4))
+for iSub in range(len(subList)):
+    dataSub = data[(data['sub']==iSub+1)].copy().reset_index(drop=True)
+    beta = [dataSub.loc[0,'weights'+str(iBar+1)] for iBar in range(5)]
+    for i in np.arange(dataSub.loc[0,'NTrials']-window):
+        dataWindow = dataSub.iloc[i:i+window]
+        X = dataWindow[cols].values
+        y = dataWindow['response'].values
+        X = sm.add_constant(X)
+        mod = sm.OLS(y, X)
+        res = mod.fit()
+        pMat3[iSub, i, :] = res.pvalues[1:][np.array(beta)>0]
+#     ax.plot(np.arange(data['NTrials'].min()-window),np.nansum(pMat3[iSub,range(data['NTrials'].min()-window),:]<0.05,axis=1))
+ax.plot(np.arange(data['NTrials'].min()-window),np.nanmean(np.nansum(pMat3[:,range(data['NTrials'].min()-window),:]<0.05,axis=2),axis=0), linewidth=2)
+ax.set_ylabel('Number of significant regressors')
+ax.set_xlabel('Trial')
+ax.set(ylim=[-0.5,3.5])
 
 # %%

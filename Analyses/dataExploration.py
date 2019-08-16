@@ -76,7 +76,7 @@ plt.plot(np.mean(learningCurves,axis=0))
 plt.ylabel('absolute error (average across participants)')
 plt.xlabel('trial')
 
-# %%
+# %% {"collapsed": true, "jupyter": {"outputs_hidden": true}}
 fig, axes = plt.subplots(len(subList),1,figsize=(20,4*len(subList)))
 for iSub, sub in enumerate(subList):
     axes[iSub].plot(data.loc[data['sub']==sub, 'absError'])
@@ -208,6 +208,7 @@ for nBlocks in [1,2,3,5,10]:
 # %load_ext rpy2.ipython
 
 # %% {"magic_args": "-i df -o resid -o fitted", "language": "R"}
+#
 
 # %% [markdown]
 # ### Estimate the coefficients people use
