@@ -58,6 +58,7 @@ for iSub, sub in enumerate(subList):
 
 # %% [markdown]
 # ### estimate betas
+# Using a window of 20 at the time of writing.
 
 # %%
 import statsmodels.api as sm
