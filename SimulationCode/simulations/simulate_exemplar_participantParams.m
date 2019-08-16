@@ -17,7 +17,8 @@ D = 5;
 % regression coefficients
 load('../../Data/data.mat')
 betaWeights = sort(sub(1).weights(1,:), 'descend');
-clear sub
+real_data = sub;
+clear sub;
 
 % parameter estimates
 load('../fitting_results/exemplar_weights_fits.mat')
@@ -36,7 +37,6 @@ num_subs = 41;
 % initialize learning algorithm
 theta = rand(D,1);
 
-T = 500;
 
 for subject = 1:num_subs
     mem_decay = results(subject).x(1);
@@ -45,11 +45,15 @@ for subject = 1:num_subs
     sub(subject).mem_decay = results(subject).x(1);
     sub(subject).similarity_weight = results(subject).x(2);
     sub(subject).sigma = results(subject).x(3);
-    sub(subject).nTrials = T;
+    sub(subject).nTrials = results(subject).nTrials;
+    T = results(subject).nTrials;
+    
     for trial = 1:T
+        disp(trial)
      
         % sample X for this trial
-        X = gX();
+        X = real_data(subject).bars(trial,:);
+        X = X';
     
         %compute prediction
         if trial > 1 
@@ -106,5 +110,5 @@ for subject = 1:num_subs
 end
 
 %% save data
-save('../../../simulated_exemplar_participantParams', 'sub')
+save('../../../simulated_exemplar_participantParams_new', 'sub')
 
