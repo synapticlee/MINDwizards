@@ -42,17 +42,12 @@ for trial = 1:num_trials
             K(X_old,X,1:trial-1,trial,lambda,sigma_f,tau);
         sigma = sqrt(cov);
 
-        if trial==500
-            keyboard
-        end
     end
     
     % compare prediction based on parameters to actual response
     choice_probs(trial) = ...
         1/(sigma*sqrt(2*pi))* exp(-.5*((response - m)/sigma)^2); 
 
-    mean_est(trial) = m;
-    var_est(trial)  = sigma.^2;
 end
 
 %compute negative log likelihood
